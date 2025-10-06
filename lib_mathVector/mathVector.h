@@ -1,49 +1,220 @@
-#ifndef LIB_MATHVECTOR_MATHVECTORX_H_
-#define LIB_MATHVECTOR_MATHVECTORX_H_
-
 #include <iostream>
 #include "../lib_TVector/TVector.h"
+#include <initializer_list>
+#include <utility>
 
-template <typename T>
-class mathVector : private TVector<T> {
-private:
-    size_t _size;
-    TVector<T> data;
+#pragma once
 
+template <typename T> class mathVector : public TVector<T> {
 public:
     mathVector();
-    mathVector(size_t size);
+    explicit mathVector(int);
+    mathVector(int, const T*);
+    explicit mathVector(std::initializer_list<T>);
+    mathVector(int, std::initializer_list<T>);
+    explicit mathVector(const mathVector<T>&);
+    explicit mathVector(const TVector<T>&);
+    mathVector(mathVector&&) noexcept;
+
     ~mathVector();
 
-    mathVector<T> operator*(T& val);
-    T operator*(mathVector<T>& vec);
-
-    friend std::ostream& operator<<(std::ostream& os, const mathVector<T>& data) {
-        return os;
-    }
-    friend std::istream& operator>>(std::istream& is, const mathVector<T>& data) {
-        return is;
-    }
-
-private:
+    mathVector<T>& operator+(const mathVector<T>&) const;
+    mathVector<T>& operator-(const mathVector<T>&) const;
+    mathVector<T>& operator*(const T) const;
+    mathVector<T>& operator+=(const mathVector<T>&);
+    mathVector<T>& operator-=(const mathVector<T>&);
+    mathVector<T>& operator*=(const T);
+    T operator*(const mathVector<T>&) const;
 };
 
-template <typename T>
-mathVector<T>::mathVector() : TVector<T>() { }
+template<class T> mathVector<T>::mathVector() {
+    _data = new T[_capacity];
+    _states = new TVectorElemState[_capacity];
+    for (int i = 0; i < _capacity; i++) _states[i] = TVectorElemState::empty;
+}
 
-template <typename T>
-mathVector<T>::~mathVector() { }
-template <typename T>
-mathVector<T>::mathVector(size_t size) : _size(size) { }
+template<class T> mathVector<T>::mathVector(int size) {
+    if (size < 0) throw std::invalid_argument("mathVector.size_constructor: Invalid argument 'size' - must be >= 0");
+    _size = size;
+    if (_size == 0) {
+        _data = new T[_capacity];
+        _states = new TVectorElemState[_capacity];
+        for (int i = 0; i < _capacity; i++) _states[i] = TVectorElemState::empty;
+    }
+    else {
+        _capacity = size + CAPACITY;
+        _data = new T[_capacity];
+        _states = new TVectorElemState[_capacity];
+        for (int i = 0; i < _size; i++) _states[i] = TVectorElemState::busy;
+        for (int i = _size; i < _capacity; i++) _states[i] = TVectorElemState::empty;
+    }
+}
 
-template <typename T>
-mathVector<T> mathVector<T>::operator*(T& val) {
-    mathVector<T> result(size);
+template<class T> mathVector<T>::mathVector(int size, const T* data) {
+    if (size < 0) {
+        throw std::invalid_argument("mathVector.sizedata_constructor: Invalid argument 'size' - must be >= 0");
+    }
+    if (data == nullptr && size > 0) {
+        throw std::invalid_argument("mathVector.size_constructor: Invalid argument 'data' - is nullptr");
+    }
+    _size = size;
+    _capacity = _size + CAPACITY;
+    _data = new T[_capacity];
+    _states = new TVectorElemState[_capacity];
+    for (int i = 0; i < _size; i++) {
+        _data[i] = data[i];
+        _states[i] = TVectorElemState::busy;
+    }
+    for (int i = _size; i < _capacity; i++) {
+        _states[i] = TVectorElemState::empty;
+    }
+}
+
+template<class T> mathVector<T>::mathVector(std::initializer_list<T> init) {
+    if (init.size() > 0) {
+        _size = init.size();
+        _capacity = _size + CAPACITY;
+        _data = new T[_capacity];
+        _states = new TVectorElemState[_capacity];
+        const T* src = init.begin();
+        for (int i = 0; i < _size; i++) {
+            _data[i] = src[i];
+            _states[i] = TVectorElemState::busy;
+        }
+        for (int i = _size; i < _capacity; i++) {
+            _states[i] = TVectorElemState::empty;
+        }
+    }
+}
+
+template<class T> mathVector<T>::mathVector(int size, std::initializer_list<T> init) {
+    if (size < 0) {
+        throw std::invalid_argument("mathVector.sizeinitlist_constructor: Invalid argument 'size' - must be >= 0");
+    }
+    if (size > 0) {
+        _size = size;
+        _capacity = _size + CAPACITY;
+        _data = new T[_capacity];
+        _states = new TVectorElemState[_capacity];
+        const T* src = init.begin();
+        for (int i = 0; i < _size; i++) {
+            _data[i] = src[i];
+            _states[i] = TVectorElemState::busy;
+        }
+        for (int i = _size; i < _capacity; i++) {
+            _states[i] = TVectorElemState::empty;
+        }
+    }
+}
+
+template<class T> mathVector<T>::mathVector(const mathVector<T>& other) {
+    _size = other._size;
+    _capacity = other._capacity;
+    _data = new T[_capacity];
+    _deleted = other._deleted;
+    _states = new TVectorElemState[_capacity];
+    for (int i = 0; i < _capacity; i++) {
+        _data[i] = other._data[i];
+        _states[i] = other._states[i];
+    }
+}
+
+template<class T> mathVector<T>::mathVector(const TVector<T>& other) {
+    _size = other._size;
+    _capacity = other._capacity;
+    _data = new T[_capacity];
+    _deleted = other._deleted;
+    _states = new TVectorElemState[_capacity];
+    for (int i = 0; i < _capacity; i++) {
+        _data[i] = other._data[i];
+        _states[i] = other._states[i];
+    }
+}
+
+template<class T> mathVector<T>::mathVector(mathVector&& other) noexcept :
+    _data(std::exchange(other._data, nullptr)),
+    _size(std::exchange(other._size, 0)),
+    _capacity(std::exchange(other._capacity, CAPACITY)),
+    _deleted(std::exchange(other._deleted, 0)),
+    _states(std::exchange(other._states, nullptr))
+{
+
+}
+
+template<class T> mathVector<T>::~mathVector() {
+    if (_data != nullptr) {
+        delete[] _data;
+        delete[] _states;
+    }
+}
+
+
+template<class T> mathVector<T>& mathVector<T>::operator+(const mathVector<T>& other) const {
+    if (size() != other._size) {
+        throw std::logic_error("mathVector.operator+: vectors must be the same size");
+    }
+    mathVector<T> result(size());
+    for (int i = 0; i < size(); i++) {
+        result[i] = at(i) + other[i];
+    }
+    return result;
+}
+
+template<class T>mathVector<T>& mathVector<T>::operator-(const mathVector<T>&) const {
+    if (size() != other._size) {
+        throw std::logic_error("mathVector.operator-: vectors must be the same size");
+    }
+    mathVector<T> result(size());
+    for (int i = 0; i < size(); i++) {
+        result[i] = at(i) - other[i];
+    }
+    return result;
+}
+
+template<class T>mathVector<T>& mathVector<T>::operator*(const T scalar) const {
+    mathVector<T> result(size());
+    for (int i = 0; i < size(); i++) {
+        result[i] = at(i) * scalar;
+    }
+    return result;
+}
+
+template<class T>mathVector<T>& mathVector<T>::operator+=(const mathVector<T>&) {
+    if (size() != other._size) {
+        throw std::logic_error("mathVector.operator+=: vectors must be the same size");
+    }
+    for (int i = 0; i < size(); i++) {
+        this->at(i) += other[i];
+    }
     return *this;
 }
-template <typename T>
-T mathVector<T>::operator*(mathVector<T>& vec) {
-    return T();
+
+template<class T>mathVector<T>& mathVector<T>::operator-=(const mathVector<T>&) {
+    if (size() != other._size) {
+        throw std::logic_error("mathVector.operator-=: vectors must be the same size");
+    }
+    for (int i = 0; i < size(); i++) {
+        this->at(i) -= other[i];
+    }
+    return *this;
 }
 
-#endif  // LIB_MATHVECTOR_MATHVECTORX_H_
+template<class T> mathVector<T>& mathVector<T>::operator*=(const T scalar) {
+    for (int i = 0; i < size(); i++) {
+        this->at(i) *= scalar;
+    }
+    return *this;
+}
+
+template<class T> T mathVector<T>::operator*(const mathVector<T>& other) const {
+    if (size() != other._size) {
+        throw std::logic_error("mathVector.operator* vec: vectors must be the same size");
+    }
+
+    T result = T();
+
+    for (int i = 0; i < size(); i++) {
+        result += at(i) * other[i];
+    }
+    return result;
+}
