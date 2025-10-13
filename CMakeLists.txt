@@ -21,6 +21,8 @@ add_subdirectory(lib_matrix)
 add_subdirectory(lib_matrixConsoleUI)
 add_subdirectory(lib_triangleMatrix)
 add_subdirectory(lib_TVector)
+add_subdirectory(lib_algorithms)
+add_subdirectory(lib_stack)
 add_subdirectory(main)                # подключаем дополнительный CMakeLists.txt из подкаталога с именем main
 
 option(BTEST "build test?" ON)        # указываем подключаем ли google-тесты (ON или YES) или нет (OFF или NO)

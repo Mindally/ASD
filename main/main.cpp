@@ -84,7 +84,7 @@ int main()
 #endif // POINTCIRCLE
 
 
-#define MATRIX_CONSOLE_UI
+//#define MATRIX_CONSOLE_UI
 #ifdef MATRIX_CONSOLE_UI
 
 #include <iostream>
@@ -96,4 +96,182 @@ int main() {
 	//matrixApplication.start();
 }
 
-#endif  // MATRIX_CONSOLE_UI
+#endif // POINTCIRCLE
+
+
+#define MATRIX_LOCAL_MIN
+#ifdef MATRIX_LOCAL_MIN
+
+#include <iostream>
+#include "../lib_algorithms/algorithms.h"
+
+#define MAX_N 100
+
+bool checkLocalMin(int matrix[][MAX_N], int n, int value, int row, int col) {
+    if (row > 0 && matrix[row - 1][col] <= value) return false;
+    if (row < n - 1 && matrix[row + 1][col] <= value) return false;
+    if (col > 0 && matrix[row][col - 1] <= value) return false;
+    if (col < n - 1 && matrix[row][col + 1] <= value) return false;
+    return true;
+}
+
+void testBasicMatrix() {
+    const int n = 3;
+    int matrix[MAX_N][MAX_N] = {
+        {3, 1, 2},
+        {5, 8, 4},
+        {7, 6, 9}
+    };
+    int result = findLocalMin(matrix, n);
+
+    int found_i = -1, found_j = -1;
+    for (int i = 0; i < n; i++)
+        for (int j = 0; j < n; j++)
+            if (matrix[i][j] == result) {
+                found_i = i;
+                found_j = j;
+            }
+
+    if (!checkLocalMin(matrix, n, result, found_i, found_j) ||
+        (result != 1 && result != 6)) {
+        std::cout << "1. FAILED\n";
+    }
+    else {
+        std::cout << "1. PASSED\n";
+    }
+}
+
+void testSingleElement() {
+    const int n = 1;
+    int matrix[MAX_N][MAX_N] = { {42} };
+    int result = findLocalMin(matrix, n);
+
+    int found_i = -1, found_j = -1;
+    for (int i = 0; i < n; i++)
+        for (int j = 0; j < n; j++)
+            if (matrix[i][j] == result) {
+                found_i = i;
+                found_j = j;
+            }
+
+    if (!checkLocalMin(matrix, n, result, found_i, found_j) || result != 42) {
+        std::cout << "2. FAILED\n";
+    }
+    else {
+        std::cout << "2. PASSED\n";
+    }
+}
+
+void testTwoByTwo() {
+    const int n = 2;
+    int matrix[MAX_N][MAX_N] = {
+        {5, 2},
+        {7, 3}
+    };
+    int result = findLocalMin(matrix, n);
+
+    int found_i = -1, found_j = -1;
+    for (int i = 0; i < n; i++)
+        for (int j = 0; j < n; j++)
+            if (matrix[i][j] == result) {
+                found_i = i;
+                found_j = j;
+            }
+
+    if (!checkLocalMin(matrix, n, result, found_i, found_j) ||
+        (result != 2 && result != 3)) {
+        std::cout << "3. FAILED\n";
+    }
+    else {
+        std::cout << "3. PASSED\n";
+    }
+}
+
+void testCornerMin() {
+    const int n = 3;
+    int matrix[MAX_N][MAX_N] = {
+        {6, 5, 1},
+        {7, 8, 9},
+        {10,11,12}
+    };
+    int result = findLocalMin(matrix, n);
+
+    int found_i = -1, found_j = -1;
+    for (int i = 0; i < n; i++)
+        for (int j = 0; j < n; j++)
+            if (matrix[i][j] == result) {
+                found_i = i;
+                found_j = j;
+            }
+
+    if (!checkLocalMin(matrix, n, result, found_i, found_j) || result != 1) {
+        std::cout << "4. FAILED\n";
+    }
+    else {
+        std::cout << "4. PASSED\n";
+    }
+}
+
+void testMiddleMin() {
+    const int n = 3;
+    int matrix[MAX_N][MAX_N] = {
+        {8,7,6},
+        {5,1,4},
+        {9,3,10}
+    };
+    int result = findLocalMin(matrix, n);
+
+    int found_i = -1, found_j = -1;
+    for (int i = 0; i < n; i++)
+        for (int j = 0; j < n; j++)
+            if (matrix[i][j] == result) {
+                found_i = i;
+                found_j = j;
+            }
+
+    if (!checkLocalMin(matrix, n, result, found_i, found_j) || result != 1) {
+        std::cout << "5. FAILED\n";
+    }
+    else {
+        std::cout << "5. PASSED\n";
+    }
+}
+
+void testSidesMin() {
+    const int n = 3;
+    int matrix[MAX_N][MAX_N] = {
+        {9,8,7},
+        {6,5,1},
+        {3,2,4}
+    };
+    int result = findLocalMin(matrix, n);
+
+    int found_i = -1, found_j = -1;
+    for (int i = 0; i < n; i++)
+        for (int j = 0; j < n; j++)
+            if (matrix[i][j] == result) {
+                found_i = i;
+                found_j = j;
+            }
+
+    if (!checkLocalMin(matrix, n, result, found_i, found_j) ||
+        (result != 1 && result != 2)) {
+        std::cout << "6. FAILED\n";
+    }
+    else {
+        std::cout << "6. PASSED\n";
+    }
+}
+
+int main() {
+    testBasicMatrix();
+    testSingleElement();
+    testTwoByTwo();
+    testCornerMin();
+    testMiddleMin();
+    testSidesMin();
+
+    return 0;
+}
+
+#endif  // MATRIX_LOCAL_MIN

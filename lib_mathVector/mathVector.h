@@ -1,220 +1,186 @@
+#pragma once
+
 #include <iostream>
 #include "../lib_TVector/TVector.h"
 #include <initializer_list>
 #include <utility>
 
-#pragma once
-
-template <typename T> class mathVector : public TVector<T> {
+template<class T> class mathVector : public TVector<T> {
 public:
+    // Constructors
     mathVector();
-    explicit mathVector(int);
+    mathVector(int);
     mathVector(int, const T*);
-    explicit mathVector(std::initializer_list<T>);
+    mathVector(std::initializer_list<T>);
     mathVector(int, std::initializer_list<T>);
-    explicit mathVector(const mathVector<T>&);
-    explicit mathVector(const TVector<T>&);
+    mathVector(const mathVector<T>&);
+    mathVector(const TVector<T>&);
     mathVector(mathVector&&) noexcept;
 
-    ~mathVector();
+    // Math functions
+    mathVector<T> add(const mathVector<T>&) const;
+    mathVector<T> sub(const mathVector<T>&) const;
+    mathVector<T> mult(const T&) const;
+    mathVector<T> div(const T&) const;
+    T scalarMult(const mathVector<T>&) const;
 
-    mathVector<T>& operator+(const mathVector<T>&) const;
-    mathVector<T>& operator-(const mathVector<T>&) const;
-    mathVector<T>& operator*(const T) const;
+    // Operators that don't change the current object
+    mathVector<T> operator+(const mathVector<T>&) const;
+    mathVector<T> operator-(const mathVector<T>&) const;
+    mathVector<T> operator*(const T&) const;
+    mathVector<T> operator/(const T&) const;
+    T operator*(const mathVector<T>&) const;
+
+    // Operators that change the current object
     mathVector<T>& operator+=(const mathVector<T>&);
     mathVector<T>& operator-=(const mathVector<T>&);
-    mathVector<T>& operator*=(const T);
-    T operator*(const mathVector<T>&) const;
+    mathVector<T>& operator*=(const T&);
+    mathVector<T>& operator/=(const T&);
+
+    // Other operator
+    mathVector<T>& operator=(const mathVector<T>&);
 };
 
-template<class T> mathVector<T>::mathVector() {
-    _data = new T[_capacity];
-    _states = new TVectorElemState[_capacity];
-    for (int i = 0; i < _capacity; i++) _states[i] = TVectorElemState::empty;
+// Constructors
+
+template<class T> mathVector<T>::mathVector() : TVector<T>() {}
+
+template<class T> mathVector<T>::mathVector(int size) : TVector<T>(size) {}
+
+template<class T> mathVector<T>::mathVector(int size, const T* data) : TVector<T>(size, data) {}
+
+template<class T> mathVector<T>::mathVector(std::initializer_list<T> init) : TVector<T>(init) {}
+
+template<class T> mathVector<T>::mathVector(int size, std::initializer_list<T> init) : TVector<T>(size, init) {}
+
+template<class T> mathVector<T>::mathVector(const mathVector<T>& other) : TVector<T>(other) {}
+
+template<class T> mathVector<T>::mathVector(const TVector<T>& other) : TVector<T>(other) {}
+
+template<class T> mathVector<T>::mathVector(mathVector&& other) noexcept : TVector<T>(other) {}
+
+// Math functions
+
+template<class T> mathVector<T> mathVector<T>::add(const mathVector<T>& other) const {
+    if (this->size() != other.size()) {
+        throw std::logic_error("mathVector.add: vectors must be the same size");
+    }
+    mathVector<T> result(this->size());
+    for (int i = 0; i < this->size(); i++) {
+        result[i] = this->at(i) + other[i];
+    }
+
+    return result;
 }
 
-template<class T> mathVector<T>::mathVector(int size) {
-    if (size < 0) throw std::invalid_argument("mathVector.size_constructor: Invalid argument 'size' - must be >= 0");
-    _size = size;
-    if (_size == 0) {
-        _data = new T[_capacity];
-        _states = new TVectorElemState[_capacity];
-        for (int i = 0; i < _capacity; i++) _states[i] = TVectorElemState::empty;
+template<class T> mathVector<T> mathVector<T>::sub(const mathVector<T>& other) const {
+    if (this->size() != other.size()) {
+        throw std::logic_error("mathVector.sub: vectors must be the same size");
     }
-    else {
-        _capacity = size + CAPACITY;
-        _data = new T[_capacity];
-        _states = new TVectorElemState[_capacity];
-        for (int i = 0; i < _size; i++) _states[i] = TVectorElemState::busy;
-        for (int i = _size; i < _capacity; i++) _states[i] = TVectorElemState::empty;
-    }
-}
-
-template<class T> mathVector<T>::mathVector(int size, const T* data) {
-    if (size < 0) {
-        throw std::invalid_argument("mathVector.sizedata_constructor: Invalid argument 'size' - must be >= 0");
-    }
-    if (data == nullptr && size > 0) {
-        throw std::invalid_argument("mathVector.size_constructor: Invalid argument 'data' - is nullptr");
-    }
-    _size = size;
-    _capacity = _size + CAPACITY;
-    _data = new T[_capacity];
-    _states = new TVectorElemState[_capacity];
-    for (int i = 0; i < _size; i++) {
-        _data[i] = data[i];
-        _states[i] = TVectorElemState::busy;
-    }
-    for (int i = _size; i < _capacity; i++) {
-        _states[i] = TVectorElemState::empty;
-    }
-}
-
-template<class T> mathVector<T>::mathVector(std::initializer_list<T> init) {
-    if (init.size() > 0) {
-        _size = init.size();
-        _capacity = _size + CAPACITY;
-        _data = new T[_capacity];
-        _states = new TVectorElemState[_capacity];
-        const T* src = init.begin();
-        for (int i = 0; i < _size; i++) {
-            _data[i] = src[i];
-            _states[i] = TVectorElemState::busy;
-        }
-        for (int i = _size; i < _capacity; i++) {
-            _states[i] = TVectorElemState::empty;
-        }
-    }
-}
-
-template<class T> mathVector<T>::mathVector(int size, std::initializer_list<T> init) {
-    if (size < 0) {
-        throw std::invalid_argument("mathVector.sizeinitlist_constructor: Invalid argument 'size' - must be >= 0");
-    }
-    if (size > 0) {
-        _size = size;
-        _capacity = _size + CAPACITY;
-        _data = new T[_capacity];
-        _states = new TVectorElemState[_capacity];
-        const T* src = init.begin();
-        for (int i = 0; i < _size; i++) {
-            _data[i] = src[i];
-            _states[i] = TVectorElemState::busy;
-        }
-        for (int i = _size; i < _capacity; i++) {
-            _states[i] = TVectorElemState::empty;
-        }
-    }
-}
-
-template<class T> mathVector<T>::mathVector(const mathVector<T>& other) {
-    _size = other._size;
-    _capacity = other._capacity;
-    _data = new T[_capacity];
-    _deleted = other._deleted;
-    _states = new TVectorElemState[_capacity];
-    for (int i = 0; i < _capacity; i++) {
-        _data[i] = other._data[i];
-        _states[i] = other._states[i];
-    }
-}
-
-template<class T> mathVector<T>::mathVector(const TVector<T>& other) {
-    _size = other._size;
-    _capacity = other._capacity;
-    _data = new T[_capacity];
-    _deleted = other._deleted;
-    _states = new TVectorElemState[_capacity];
-    for (int i = 0; i < _capacity; i++) {
-        _data[i] = other._data[i];
-        _states[i] = other._states[i];
-    }
-}
-
-template<class T> mathVector<T>::mathVector(mathVector&& other) noexcept :
-    _data(std::exchange(other._data, nullptr)),
-    _size(std::exchange(other._size, 0)),
-    _capacity(std::exchange(other._capacity, CAPACITY)),
-    _deleted(std::exchange(other._deleted, 0)),
-    _states(std::exchange(other._states, nullptr))
-{
-
-}
-
-template<class T> mathVector<T>::~mathVector() {
-    if (_data != nullptr) {
-        delete[] _data;
-        delete[] _states;
-    }
-}
-
-
-template<class T> mathVector<T>& mathVector<T>::operator+(const mathVector<T>& other) const {
-    if (size() != other._size) {
-        throw std::logic_error("mathVector.operator+: vectors must be the same size");
-    }
-    mathVector<T> result(size());
-    for (int i = 0; i < size(); i++) {
-        result[i] = at(i) + other[i];
+    mathVector<T> result(this->size());
+    for (int i = 0; i < this->size(); i++) {
+        result[i] = this->at(i) - other[i];
     }
     return result;
 }
 
-template<class T>mathVector<T>& mathVector<T>::operator-(const mathVector<T>&) const {
-    if (size() != other._size) {
-        throw std::logic_error("mathVector.operator-: vectors must be the same size");
-    }
-    mathVector<T> result(size());
-    for (int i = 0; i < size(); i++) {
-        result[i] = at(i) - other[i];
+template<class T> mathVector<T> mathVector<T>::mult(const T& scalar) const {
+    mathVector<T> result(this->size());
+    for (int i = 0; i < this->size(); i++) {
+        result[i] = this->at(i) * scalar;
     }
     return result;
 }
 
-template<class T>mathVector<T>& mathVector<T>::operator*(const T scalar) const {
-    mathVector<T> result(size());
-    for (int i = 0; i < size(); i++) {
-        result[i] = at(i) * scalar;
+template<class T> mathVector<T> mathVector<T>::div(const T& scalar) const {
+    if (scalar == T()) {
+        throw std::logic_error("mathVector.div: division by zero");
+    }
+    mathVector<T> result(this->size());
+    for (int i = 0; i < this->size(); i++) {
+        result[i] = this->at(i) / scalar;
     }
     return result;
 }
 
-template<class T>mathVector<T>& mathVector<T>::operator+=(const mathVector<T>&) {
-    if (size() != other._size) {
-        throw std::logic_error("mathVector.operator+=: vectors must be the same size");
+template<class T> T mathVector<T>::scalarMult(const mathVector<T>& other) const {
+    if (this->size() != other.size()) {
+        throw std::logic_error("mathVector.scalarMult: vectors must be the same size");
     }
-    for (int i = 0; i < size(); i++) {
+
+    T result = T();
+    for (int i = 0; i < this->size(); i++) {
+        result += this->at(i) * other[i];
+    }
+    return result;
+}
+
+// Operators that don't change the current object
+
+template<class T> mathVector<T> mathVector<T>::operator+(const mathVector<T>& other) const {
+    return this->add(other);
+}
+
+template<class T> mathVector<T> mathVector<T>::operator-(const mathVector<T>& other) const {
+    return this->sub(other);
+}
+
+template<class T> mathVector<T> mathVector<T>::operator*(const T& scalar) const {
+    return this->mult(scalar);
+}
+
+template<class T> mathVector<T> mathVector<T>::operator/(const T& scalar) const {
+    return this->div(scalar);
+}
+
+template<class T> T mathVector<T>::operator*(const mathVector<T>& other) const {
+    return this->scalarMult(other);
+}
+
+// Operators that change the current object
+
+template<class T> mathVector<T>& mathVector<T>::operator+=(const mathVector<T>& other) {
+    if (this->size() != other.size()) {
+        throw std::logic_error("mathVector.+=: Vectors must be the same size");
+    }
+    for (int i = 0; i < this->size(); i++) {
         this->at(i) += other[i];
     }
     return *this;
 }
 
-template<class T>mathVector<T>& mathVector<T>::operator-=(const mathVector<T>&) {
-    if (size() != other._size) {
-        throw std::logic_error("mathVector.operator-=: vectors must be the same size");
+template<class T> mathVector<T>& mathVector<T>::operator-=(const mathVector<T>& other) {
+    if (this->size() != other.size()) {
+        throw std::logic_error("mathVector.-=: Vectors must be the same size");
     }
-    for (int i = 0; i < size(); i++) {
+    for (int i = 0; i < this->size(); i++) {
         this->at(i) -= other[i];
     }
     return *this;
 }
 
-template<class T> mathVector<T>& mathVector<T>::operator*=(const T scalar) {
-    for (int i = 0; i < size(); i++) {
+template<class T> mathVector<T>& mathVector<T>::operator*=(const T& scalar) {
+    for (int i = 0; i < this->size(); i++) {
         this->at(i) *= scalar;
     }
     return *this;
 }
 
-template<class T> T mathVector<T>::operator*(const mathVector<T>& other) const {
-    if (size() != other._size) {
-        throw std::logic_error("mathVector.operator* vec: vectors must be the same size");
+template<class T> mathVector<T>& mathVector<T>::operator/=(const T& scalar) {
+    if (scalar == T()) {
+        throw std::logic_error("mathVector./=: Division by zero");
     }
-
-    T result = T();
-
-    for (int i = 0; i < size(); i++) {
-        result += at(i) * other[i];
+    for (int i = 0; i < this->size(); i++) {
+        this->at(i) /= scalar;
     }
-    return result;
+    return *this;
+}
+
+// Other operator
+
+template<class T> mathVector<T>& mathVector<T>::operator=(const mathVector<T>& other) {
+    if (this != &other) {
+        TVector<T>::operator=(other);
+    }
+    return *this;
 }

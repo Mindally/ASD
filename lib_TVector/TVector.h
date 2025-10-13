@@ -221,11 +221,14 @@ template<class T> T& TVector<T>::back() const {
 // Functions
 template<class T> bool TVector<T>::is_empty() const noexcept {
     if (size() == 0) return true;
-    return false;
+    for (int i = 0; i < size(); i++) {
+        if (_states[i] == TVectorElemState::busy) return false;
+    }
+    return true;
 }
 
-template<class T> bool TVector<T>::is_full() const noexcept { // Weird
-    return _size >= _capacity;
+template<class T> bool TVector<T>::is_full() const noexcept {
+    return size() >= _capacity;
 }
 
 template<class T> bool TVector<T>::is_available(int index) const {
@@ -343,13 +346,8 @@ template<class T> void TVector<T>::erase(int index) {
 
 // Memory management functions
 template<class T> void TVector<T>::clear() noexcept {
-    delete[] _data;
-    delete[] _states;
     _size = 0;
-    _capacity = CAPACITY;
     _deleted = 0;
-    _data = new T[_capacity];
-    _states = new TVectorElemState[_capacity];
     for (int i = 0; i < _capacity; i++) _states[i] = TVectorElemState::empty;
 }
 
@@ -393,19 +391,16 @@ template<class T> void TVector<T>::resize(int new_size) {
         throw std::invalid_argument("TVector.resize: Invalid argument 'new_size' - must be >= 0");
     }
     effective_deletion();
-    if (new_size < _size) {
+    if (new_size == size()) return;
+    if (new_size < size()) {
         int cnt = 0;
         for (int i = new_size; i < _size; i++) _states[i] = TVectorElemState::empty;
-        for (int i = 0; i < new_size; i++) {
-            if (_states[i] == TVectorElemState::busy) cnt++;
-        }
-        _size = cnt;
     }
     else {
         if (new_size >= _capacity) reserve(new_size + CAPACITY);
         for (int i = _size; i < new_size; i++) _states[i] = TVectorElemState::empty;
-        _size = new_size;
     }
+    _size = new_size;
 }
 
 
