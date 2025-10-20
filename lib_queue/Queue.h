@@ -1,0 +1,145 @@
+#pragma once
+
+#include "../lib_TVector/TVector.h"
+
+template<class T> class Queue {
+	T* _data;
+	int _size;
+	int _head;
+	int _tail;
+	int _count;
+public:
+	// Constructors
+	Queue();
+	Queue(int);
+	Queue(TVector<T>&);
+	Queue(std::initializer_list<T>);
+	Queue(const Queue&);
+
+	// Destructor
+	~Queue() = default;
+
+	// Functions
+	void push(T val);
+	void pop();
+	T head() const;
+	inline T& tail() const;
+	inline bool isEmpty() const noexcept { return _count == 0; };
+	inline bool isFull() const noexcept { return _count == _size; };
+	void clear() noexcept;
+
+	void print();
+};
+
+// Constructors
+
+template<class T> Queue<T>::Queue() {
+	_data = new T[1];
+	_size = 1;
+	_head = 0;
+	_tail = 0;
+	_count = 0;
+}
+template<class T> Queue<T>::Queue(int size) {
+	if (size <= 0) {
+		throw std::invalid_argument("Queue: Invalid argument 'size' - must be >= 0");
+	}
+	_data = new T[size];
+	_size = size;
+	_head = 0;
+	_tail = 0;
+	_count = 0;
+}
+
+template<class T> Queue<T>::Queue(TVector<T>& other) {
+	if (other.size() < 0) {
+		throw std::invalid_argument("Queue: Invalid argument 'size' - must be >= 0");
+	}
+	other.shrink_to_fit();
+	_data = new T[other.size()];
+	for (int i = 0; i < other.size(); i++) {
+		_data[i] = other[i];
+	}
+	_size = other.size();
+	_head = 0;
+	_count = _size;
+	_tail = _count % _size;
+}
+
+template<class T> Queue<T>::Queue(std::initializer_list<T> init) {
+	if (init.size() <= 0) {
+		throw std::invalid_argument("Queue: Invalid argument 'size' - must be >= 0");
+	}
+	_data = new T[init.size()];
+	_size = init.size();
+	const T* src = init.begin();
+	for (int i = 0; i < _size; i++) {
+		_data[i] = src[i];
+	}
+	_head = 0;
+	_count = _size;
+	_tail = _count % _size;
+}
+
+template<class T> Queue<T>::Queue(const Queue& other) {
+	_data = new T[other._size];
+	for (int i = 0; i < other._size; i++) {
+		_data[i] = other._data[i];
+	}
+	_size = other._size;
+	_head = other._head;;
+	_tail = other._tail;
+	_count = other._count;
+}
+
+// Functions
+
+template<class T> void Queue<T>::push(T val) {
+	if (isFull()) {
+		throw std::logic_error("Queue.push: Unable to push - queue is full");
+	}
+	_count++;
+	_data[_tail] = val;
+	_tail = (_tail + 1) % _size;
+}
+
+template<class T> void Queue<T>::pop() {
+	if (isEmpty()) {
+		throw std::logic_error("Queue.pop: Unable to pop - Queue is empty");
+	}
+	_head = (_head + 1) % _size;
+	_count--;
+}
+
+template<class T> T Queue<T>::head() const {
+	if (isEmpty()) {
+		throw std::logic_error("Queue.head: Unable to get head element - Queue is empty");
+	}
+	return _data[_head];
+}
+
+template<class T> T& Queue<T>::tail() const {
+	if (isEmpty()) {
+		throw std::logic_error("stack.top: Unable to get top element - stack is empty");
+	}
+	return _data[(_tail - 1 + _size) % _size];
+}
+
+template<class T> void Queue<T>::clear() noexcept { //??
+	if (isEmpty()) return;
+	_head = 0;
+	_tail = 0;
+	_count = 0;
+}
+
+template<class T> void Queue<T>::print() {
+	for (int i = 0; i < _size; i++) {
+		std::cout << _data[i] << " ";
+	}
+	std::cout << std::endl;
+
+	for (int i = _head; i <= _tail; i++) {
+		std::cout << _data[i];
+	}
+	std::cout << std::endl;
+}
