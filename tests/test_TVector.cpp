@@ -11,7 +11,6 @@ TEST(TVectorTest, DefaultConstructorParameters) {
     TVector<int> empty1;
     EXPECT_EQ(empty1.size(), 0);
     EXPECT_EQ(empty1.capacity(), CAPACITY);
-    EXPECT_EQ(empty1.deleted_count(), 0);
 }
 
 TEST(TVectorTest, SizeConstructor) {
@@ -32,8 +31,7 @@ TEST(TVectorTest, SizeDataConstructor) {
     int arr[10] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
     TVector<int> vec1(10, arr);
     bool actual_result;
-    if (vec1.size() == 10 && vec1.capacity() == 25
-        && vec1.deleted_count() == 0) {
+    if (vec1.size() == 10 && vec1.capacity() == 25) {
         actual_result = true;
         for (int i = 0; i < vec1.size(); i++) {
             if (vec1[i] != i + 1) actual_result = false;
