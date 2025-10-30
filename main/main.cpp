@@ -1,37 +1,19 @@
-// Copyright 2024 Marina Usova
+// Copyright 2025 Artem Denisov
 
-#define EASY_EXAMPLE
-#ifdef EASY_EXAMPLE
+#define TEST_MAIN
+#ifdef TEST_MAIN
+
+#include "../lib_algorithms/algorithms.h"
+#include "../lib_doubly_linked_list/DoublyLinkedList.h"
+#include "../lib_list/List.h"
+#include "../lib_queue/Queue.h"
+#include "../lib_stack/Stack.h"
+#include "../lib_tvector/TVector.h"
 
 #include <iostream>
-#include <iomanip>
-#include "../lib_easy_example/easy_example.h"
 
 int main() {
-  int a, b;
-  float result;
 
-  a = 1; b = 4;
-
-  try {
-      result = division(a, b);
-      std::cout << a << " / " << b << " = "
-          << std::setprecision(2) << result << std::endl;
-  } catch (std::exception err) {
-      std::cerr << err.what() << std::endl;
-  }
-
-  a = 1; b = 0;
-
-  try {
-      result = division(a, b);
-      std::cout << a << " / " << b << " = "
-          << std::setprecision(2) << result << std::endl;
-  } catch (std::exception err) {
-      std::cerr << err.what() << std::endl;
-  }
-
-  return 0;
 }
 
-#endif  // EASY_EXAMPLE
+#endif // TEST_MAIN
