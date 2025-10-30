@@ -3,7 +3,7 @@
 #include <iostream>
 #include <initializer_list>
 #include <cmath>
-#include "../lib_mathVector/mathVector.h"
+#include "../lib_math_vector/mathVector.h"
 
 template<class T> class matrix : public mathVector<mathVector<T>> {
 protected:

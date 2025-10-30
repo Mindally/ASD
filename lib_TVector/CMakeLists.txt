@@ -1,1 +1,1 @@
-create_project_lib(TVector)
+create_project_lib(TVector "libs")

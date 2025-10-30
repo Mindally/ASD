@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "../lib_mathVector/mathVector.h"
+#include "../lib_math_vector/mathVector.h"
 
 class MathVectorTest : public ::testing::Test {
 protected:

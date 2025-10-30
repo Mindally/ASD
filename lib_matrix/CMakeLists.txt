@@ -1,1 +1,1 @@
-create_project_lib(Matrix)
+create_project_lib(Matrix "libs/math_classes")

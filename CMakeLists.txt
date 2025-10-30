@@ -1,33 +1,29 @@
 ﻿# указывайте последнюю доступную вам версию CMake
 
 cmake_minimum_required(VERSION 3.14)
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# название проекта
-project(Algorithms-and-Data-Structures)
+project(ADS_matrix-implementation)
 
-# затем следует список инструкций для подключения проектов из подкаталогов
+include(cmake/function.cmake)
 
-include(cmake/function.cmake)         # подхватываем функции, реализованные в файле function.cmake
-                                      # для простоты мы объединили наборы команд для создания статической библиотеки
-								      # и для создания исполняемого проекта в отдельные функции
-
-add_subdirectory(lib_easy_example)    # подключаем дополнительный CMakeLists.txt из подкаталога с именем lib_easy_example
+add_subdirectory(lib_easy_example)
 add_subdirectory(lib_point)
 add_subdirectory(lib_circle)
-add_subdirectory(lib_mathVector)
+add_subdirectory(lib_math_vector)
 add_subdirectory(lib_matrix)
-add_subdirectory(lib_matrixConsoleUI)
-add_subdirectory(lib_triangleMatrix)
-add_subdirectory(lib_TVector)
+add_subdirectory(lib_matrix_console_ui)
+add_subdirectory(lib_triangle_matrix)
+add_subdirectory(lib_tvector)
 add_subdirectory(lib_algorithms)
 
-add_subdirectory(main)                # подключаем дополнительный CMakeLists.txt из подкаталога с именем main
+add_subdirectory(main)
 
-option(BTEST "build test?" ON)        # указываем подключаем ли google-тесты (ON или YES) или нет (OFF или NO)
+option(BTEST "build test?" ON)
 
-if(BTEST)                             # если тесты подключены         
+if(BTEST)   
     set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
     add_subdirectory("third_party/gtest" EXCLUDE_FROM_ALL)
     enable_testing()

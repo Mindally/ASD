@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "../lib_triangleMatrix/triangleMatrix.h"
+#include "../lib_triangle_matrix/triangleMatrix.h"
 
 class TriangleMatrixTest : public ::testing::Test {
 protected:

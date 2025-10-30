@@ -1,1 +1,1 @@
-create_project_lib(Circle)
+create_project_lib(Circle "libs/simple_classes")

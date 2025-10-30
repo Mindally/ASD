@@ -1,1 +1,1 @@
-create_project_lib(Point)
+create_project_lib(Point "libs/simple_classes")
