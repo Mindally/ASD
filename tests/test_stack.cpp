@@ -3,13 +3,13 @@
 #include "../lib_stack/stack.h"
 
 TEST(StackTest, DefaultConstructor) {
-	stack<int> s;
+	Stack<int> s;
 	EXPECT_EQ(s.isEmpty(), true);
-	EXPECT_EQ(s.isFull(), true);
+	EXPECT_EQ(s.isFull(), false);
 }
 
 TEST(StackTest, SizeConstructor) {
-	stack<int> s(10);
+	Stack<int> s(10);
 	EXPECT_EQ(s.isEmpty(), true);
 	EXPECT_EQ(s.isFull(), false);
 	ASSERT_ANY_THROW(s.top());
@@ -17,22 +17,22 @@ TEST(StackTest, SizeConstructor) {
 
 TEST(StackTest, TVectorConstructor) {
 	TVector<int> vec({2, 7, 45, -7});
-	stack<int> s(vec);
+	Stack<int> s(vec);
 	EXPECT_EQ(s.isEmpty(), false);
 	EXPECT_EQ(s.isFull(), true);
 	EXPECT_EQ(s.top(), -7);
 }
 
 TEST(StackTest, InitListConstructor) {
-	stack<int> s({ 2, 7, 45, -88 });
+	Stack<int> s({ 2, 7, 45, -88 });
 	EXPECT_EQ(s.isEmpty(), false);
 	EXPECT_EQ(s.isFull(), true);
 	EXPECT_EQ(s.top(), -88);
 }
 
 TEST(StackTest, CopyConstructor) {
-	stack<int> s1({ 9, 0, 0, 6 });
-	stack<int> s2(s1);
+	Stack<int> s1({ 9, 0, 0, 6 });
+	Stack<int> s2(s1);
 	EXPECT_EQ(s2.isEmpty(), false);
 	EXPECT_EQ(s2.isFull(), true);
 	EXPECT_EQ(s2.top(), 6);
@@ -41,13 +41,45 @@ TEST(StackTest, CopyConstructor) {
 	EXPECT_EQ(s2.top(), 6);
 }
 
+TEST(StackTest, AssignStack) {
+	Stack<int> s1;
+	Stack<int> s2({ 9, 0, 0, 6 });
+	s1.assign(s2);
+	EXPECT_EQ(s1.isEmpty(), false);
+	EXPECT_EQ(s1.isFull(), true);
+	EXPECT_EQ(s1.top(), 6);
+
+	s2.pop();
+	EXPECT_EQ(s1.top(), 6);
+}
+
+TEST(StackTest, AssignTVector) {
+	Stack<int> s1;
+	TVector<int> vec({1, 2, -3, 40});
+	s1.assign(vec);
+	EXPECT_EQ(s1.isEmpty(), false);
+	EXPECT_EQ(s1.isFull(), true);
+	EXPECT_EQ(s1.top(), 40);
+
+	vec.pop_back();
+	EXPECT_EQ(s1.top(), 40);
+}
+
+TEST(StackTest, ToTVector) {
+	TVector<int> data({ 1, 2, -3, 40 });
+	Stack<int> s1({ 1, 2, -3, 40 });
+	TVector<int> vec;
+	vec = s1.toTVector();
+	EXPECT_TRUE(vec == data);
+}
+
 TEST(StackTest, PushFromFullExeption) {
-	stack<int> s({ 9, 0, 0, 6 });
+	Stack<int> s({ 9, 0, 0, 6 });
 	ASSERT_ANY_THROW(s.push(7));
 }
 
 TEST(StackTest, PushFromEmpty) {
-	stack<int> s({2, 4});
+	Stack<int> s({2, 4});
 	s.pop();
 	s.pop();
 	EXPECT_EQ(s.isEmpty(), true);
@@ -56,7 +88,7 @@ TEST(StackTest, PushFromEmpty) {
 }
 
 TEST(StackTest, Push) {
-	stack<int> s(10);
+	Stack<int> s(10);
 	s.push(-12);
 	EXPECT_EQ(s.isEmpty(), false);
 	EXPECT_EQ(s.isFull(), false);
@@ -64,12 +96,12 @@ TEST(StackTest, Push) {
 }
 
 TEST(StackTest, PopFromEmpty) {
-	stack<int> s;
+	Stack<int> s;
 	ASSERT_ANY_THROW(s.pop());
 }
 
 TEST(StackTest, Pop) {
-	stack<int> s({4, 7, 8});
+	Stack<int> s({4, 7, 8});
 	s.pop();
 	EXPECT_EQ(s.top(), 7);
 
@@ -82,36 +114,36 @@ TEST(StackTest, Pop) {
 }
 
 TEST(StackTest, Clear) {
-	stack<int> s({ 4, 7, 8 });
+	Stack<int> s({ 4, 7, 8 });
 	s.clear();
 	EXPECT_EQ(s.isEmpty(), true);
 	EXPECT_EQ(s.isFull(), false);
 }
 
 TEST(StackTest, TopExeption) {
-	stack<int> s({2});
+	Stack<int> s({2});
 	EXPECT_EQ(s.top(), 2);
 	s.pop();
 	ASSERT_ANY_THROW(s.top());
 }
 
 TEST(StackTest, Top) {
-	stack<int> s(5);
+	Stack<int> s(5);
 	s.push(2);
 	EXPECT_EQ(s.top(), 2);
-	s.push(8);
-	EXPECT_EQ(s.top(), 8);
-	s.push(14);
-	EXPECT_EQ(s.top(), 14);
+	s.push(3);
+	EXPECT_EQ(s.top(), 3);
+	s.push(4);
+	EXPECT_EQ(s.top(), 4);
 }
 
 TEST(StackTest, IsEmpty) {
-	stack<int> s;
+	Stack<int> s;
 	EXPECT_EQ(s.isEmpty(), true);
 }
 
 TEST(StackTest, IsNotEmpty) {
-	stack<int> s({1, 4});
+	Stack<int> s({-57, 4});
 	EXPECT_EQ(s.isEmpty(), false);
 	s.pop();
 	EXPECT_EQ(s.isEmpty(), false);
@@ -120,7 +152,7 @@ TEST(StackTest, IsNotEmpty) {
 }
 
 TEST(StackTest, IsFull) {
-	stack<int> s({-8, 8});
+	Stack<int> s({-1, 6});
 	EXPECT_EQ(s.isFull(), true);
 	s.pop();
 	EXPECT_EQ(s.isFull(), false);
@@ -129,7 +161,7 @@ TEST(StackTest, IsFull) {
 }
 
 TEST(StackTest, IsNotFull) {
-	stack<int> s({ 1, 4, 88});
+	Stack<int> s({ 1, 7, -46});
 	EXPECT_EQ(s.isFull(), true);
 	s.pop();
 	EXPECT_EQ(s.isFull(), false);

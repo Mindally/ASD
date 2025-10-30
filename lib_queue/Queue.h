@@ -125,7 +125,7 @@ template<class T> T& Queue<T>::tail() const {
 	return _data[(_tail - 1 + _size) % _size];
 }
 
-template<class T> void Queue<T>::clear() noexcept { //??
+template<class T> void Queue<T>::clear() noexcept {
 	if (isEmpty()) return;
 	_head = 0;
 	_tail = 0;
