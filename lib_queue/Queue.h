@@ -18,7 +18,7 @@ public:
 	Queue();
 	Queue(size_t);
 	Queue(const TVector<T>&);
-	Queue(std::initializer_list<T>);
+	Queue(const std::initializer_list<T>);
 	Queue(const Queue&);
 
 	// Destructor
@@ -87,7 +87,7 @@ template<class T> Queue<T>::Queue(const TVector<T>& vector) :
 	}
 }
 
-template<class T> Queue<T>::Queue(std::initializer_list<T> init) :
+template<class T> Queue<T>::Queue(const std::initializer_list<T> init) :
 	_data(nullptr),
 	_size(init.size()),
 	_count(init.size()),

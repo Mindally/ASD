@@ -16,7 +16,7 @@ public:
 	Stack();
 	Stack(size_t);
 	Stack(const TVector<T>&);
-	Stack(std::initializer_list<T>);
+	Stack(const std::initializer_list<T>);
 	Stack(const Stack&);
 
 	// Desturctor
@@ -77,7 +77,7 @@ template<class T> Stack<T>::Stack(const TVector<T>& vector) :
 	}
 }
 
-template<class T> Stack<T>::Stack(std::initializer_list<T> init) : 
+template<class T> Stack<T>::Stack(const std::initializer_list<T> init) : 
 	_data(nullptr),
 	_size(init.size()),
 	_top(static_cast<int>(init.size()) - 1)
