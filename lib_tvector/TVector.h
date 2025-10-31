@@ -139,7 +139,7 @@ template<class T> TVector<T>::TVector(size_t size, const T* data) :
         _data[i] = data[i];
         _states[i] = TVectorElemState::busy;
     }
-    for (int i = _size; i < _capacity; i++) {
+    for (size_t i = _size; i < _capacity; i++) {
         _states[i] = TVectorElemState::empty;
     }
 }
