@@ -48,6 +48,60 @@ public:
 	// Operators overload
 	List& operator=(const List&);
 	List& operator=(const TVector<T>&);
+
+	// Class Iterator
+	class Iterator {
+		Node* _current;
+	public:
+		Iterator() : _current(nullptr) {};
+		Iterator(Node* node) : _current(node) {};
+
+		Iterator& operator=(const Iterator& other) {
+			if (this != &other) {
+				_current = other._current;
+			}
+			return *this;
+		}
+
+		Iterator& operator++() {
+			if (_current != nullptr) {
+				_current = _current->next;
+			}
+			return *this;
+		}
+		Iterator& operator++(int) {
+			Iterator iter = *this;
+			++(*this);
+			return iter;
+		}
+
+		bool operator==(const Iterator& other) const {
+			return _current == other._current;
+		}
+
+		bool operator!=(const Iterator& other) const {
+			return _current != other._current;
+		}
+
+		T& operator*() {
+			if (_current == nullptr) {
+				throw std::logic_error("List::Iterator.operator*: Current node is nullptr");
+			}
+			return _current->value;
+		}
+
+		Iterator& operator+=(size_t gap) {
+			for (int i = 0; i < gap; i++) {
+				if (_current == nullptr) break;
+				_current = _current->next;
+			}
+			return *this;
+		}
+	};
+
+	// Getters associated with the Iterator class
+	inline Iterator begin() { return Iterator(_head); };
+	inline Iterator end() { return Iterator(nullptr); };
 };
 
 // Constructors
@@ -207,7 +261,7 @@ template<class T> void List<T>::insert(Node* pos, const T& value) {
 		throw std::logic_error("List.insert: Node pointer is null");
 	}
 
-	if (isEmpty) {
+	if (isEmpty()) {
 		throw std::logic_error("List.insert: List is empty");
 	}
 
