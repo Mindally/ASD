@@ -5,17 +5,18 @@
 #include <stdexcept>
 #include <initializer_list>
 
-template<class T> class List {
-private:
-	struct Node {
+namespace singly_linked {
+	template<class T> struct Node {
 		T value;
 		Node* next;
 
 		Node(T _value, Node* _next) : value(_value), next(_next) {};
 	};
+}
 
-	Node* _head;
-	Node* _tail;
+template<class T> class List {
+	singly_linked::Node<T>* _head;
+	singly_linked::Node<T>* _tail;
 	size_t _size;
 public:
 	// Constructors
@@ -37,7 +38,7 @@ public:
 	void pushFront(const T&);
 	void pushBack(const T&);
 	void insert(size_t, const T&);
-	void insert(Node*, const T&);
+	void insertAtNode(singly_linked::Node<T>*, const T&);
 	void popBack();
 	void clear();
 
@@ -51,10 +52,10 @@ public:
 
 	// Class Iterator
 	class Iterator {
-		Node* _current;
+		singly_linked::Node<T>* _current;
 	public:
 		Iterator() : _current(nullptr) {};
-		Iterator(Node* node) : _current(node) {};
+		Iterator(singly_linked::Node<T>* node) : _current(node) {};
 
 		Iterator& operator=(const Iterator& other) {
 			if (this != &other) {
@@ -69,7 +70,7 @@ public:
 			}
 			return *this;
 		}
-		Iterator& operator++(int) {
+		Iterator operator++(int) {
 			Iterator iter = *this;
 			++(*this);
 			return iter;
@@ -91,7 +92,7 @@ public:
 		}
 
 		Iterator& operator+=(size_t gap) {
-			for (int i = 0; i < gap; i++) {
+			for (size_t i = 0; i < gap; i++) {
 				if (_current == nullptr) break;
 				_current = _current->next;
 			}
@@ -157,7 +158,7 @@ template<class T> List<T>::List(const List& other) :
 	_tail(nullptr),
 	_size(0)
 {
-	Node* current = other._head;
+	singly_linked::Node<T>* current = other._head;
 	while (current != nullptr) {
 		pushBack(current->value);
 		current = current->next;
@@ -176,7 +177,7 @@ template<class T> List<T>& List<T>::assign(const List& other) {
 	if (this != &other) {
 		clear();
 		_size = 0;
-		Node* current = other._head;
+		singly_linked::Node<T>* current = other._head;
 		while (current != nullptr) {
 			pushBack(current->value);
 			current = current->next;
@@ -200,7 +201,7 @@ template<class T> List<T>& List<T>::assign(const TVector<T>& vector) {
 
 template<class T> TVector<T> List<T>::toTVector() const {
 	TVector<T> result;
-	Node* current = _head;
+	singly_linked::Node<T>* current = _head;
 	while (current != nullptr) {
 		result.push_back(current->value);
 		current = current->next;
@@ -211,7 +212,7 @@ template<class T> TVector<T> List<T>::toTVector() const {
 
 template<class T> void List<T>::pushFront(const T& value) {
 	_size++;
-	Node* node = new Node(value, _head);
+	singly_linked::Node<T>* node = new singly_linked::Node<T>(value, _head);
 	if (isEmpty()) {
 		_tail = node;
 	}
@@ -220,7 +221,7 @@ template<class T> void List<T>::pushFront(const T& value) {
 
 template<class T> void List<T>::pushBack(const T& value) {
 	_size++;
-	Node* node = new Node(value, nullptr);
+	singly_linked::Node<T>* node = new singly_linked::Node<T>(value, nullptr);
 
 	if (isEmpty()) {
 		_head = node;
@@ -246,17 +247,20 @@ template<class T> void List<T>::insert(size_t pos, const T& value) {
 		return;
 	}
 
-	Node* current = _head;
-	for (int i = 0; i < pos - 1; i++) {
+	singly_linked::Node<T>* current = _head;
+	size_t currentPos = 0;
+	while (current != nullptr) {
+		if (currentPos == pos - 1) {
+			break;
+		}
+		currentPos++;
 		current = current->next;
 	}
-
-	Node* node = new Node(value, current->next);
-	current->next = node;
+	insertAtNode(current, value);
 	_size++;
 }
 
-template<class T> void List<T>::insert(Node* pos, const T& value) {
+template<class T> void List<T>::insertAtNode(singly_linked::Node<T>* pos, const T& value) {
 	if (pos == nullptr) {
 		throw std::logic_error("List.insert: Node pointer is null");
 	}
@@ -265,12 +269,12 @@ template<class T> void List<T>::insert(Node* pos, const T& value) {
 		throw std::logic_error("List.insert: List is empty");
 	}
 
-	Node* node = new Node(value, pos->next);
+	singly_linked::Node<T>* node = new singly_linked::Node<T>(value, pos->next);
 	pos->next = node;
-	_size++;
 	if (pos == _tail) {
 		_tail = node;
 	}
+	_size++;
 }
 
 template<class T> void List<T>::popBack() {
@@ -284,7 +288,7 @@ template<class T> void List<T>::popBack() {
 		_tail = nullptr;
 	}
 	else {
-		Node* current = _head;
+		singly_linked::Node<T>* current = _head;
 		while (current->next != _tail) {
 			current = current->next;
 		}
@@ -297,7 +301,7 @@ template<class T> void List<T>::popBack() {
 
 template<class T> void List<T>::clear() {
 	while (_head != nullptr) {
-		Node* current = _head;
+		singly_linked::Node<T>* current = _head;
 		_head = _head->next;
 		delete current;
 	}
