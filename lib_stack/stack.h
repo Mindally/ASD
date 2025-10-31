@@ -25,7 +25,7 @@ public:
 	// Functions
 	Stack& assign(const Stack&);
 	Stack& assign(const TVector<T>&);
-	TVector<T> toTVector();
+	TVector<T> toTVector() const;
 
 	void push(const T& val);
 	void pop();
@@ -35,13 +35,13 @@ public:
 
 	// Getters
 	inline bool isEmpty() const noexcept { return _top == -1; }
-	inline bool isFull() const noexcept { return _top == static_cast<int>(_size) - 1; }
+	inline bool isFull() const noexcept { return _top == static_cast<int>(_size - 1); }
 	inline size_t size() const noexcept { return static_cast<size_t>(_top + 1); }
 	inline size_t capacity() const noexcept { return _size; }
 
-	// Operator overload
+	// Operators overload
 	Stack& operator=(const Stack&);
-	Stack<T>& operator=(const TVector<T>&);
+	Stack& operator=(const TVector<T>&);
 };
 
 // Constructors
@@ -138,10 +138,10 @@ template<class T> Stack<T>& Stack<T>::assign(const TVector<T>& vector) {
 	return *this;
 }
 
-template<class T> TVector<T> Stack<T>::toTVector() {
-	TVector<T> result(this->_top + 1);
-	for (int i = 0; i < this->_size; i++) {
-		result[i] = this->_data[i];
+template<class T> TVector<T> Stack<T>::toTVector() const {
+	TVector<T> result(_top + 1);
+	for (int i = 0; i < _size; i++) {
+		result[i] = _data[i];
 	}
 	return result;
 }
@@ -179,7 +179,7 @@ template<class T> void Stack<T>::clear() noexcept {
 	_top = -1;
 }
 
-// Operator overload
+// Operators overload
 
 template<class T> Stack<T>& Stack<T>::operator=(const Stack& other) {
 	return this->assign(other);
