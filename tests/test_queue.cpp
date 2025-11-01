@@ -6,16 +6,34 @@ TEST(QueueTest, DefaultConstructor) {
 	Queue<int> q;
 	EXPECT_EQ(q.isEmpty(), true);
 	EXPECT_EQ(q.isFull(), false);
+	EXPECT_EQ(q.size(), 0);
+	EXPECT_EQ(q.capacity(), QUEUE_DEFAULT_SIZE);
 	ASSERT_ANY_THROW(q.head());
 	ASSERT_ANY_THROW(q.tail());
+}
+
+TEST(QueueTest, ZeroSizeConstructor) {
+	ASSERT_ANY_THROW(Queue<int> s(0));
 }
 
 TEST(QueueTest, SizeConstructor) {
 	Queue<int> q(10);
 	EXPECT_EQ(q.isEmpty(), true);
 	EXPECT_EQ(q.isFull(), false);
+	EXPECT_EQ(q.size(), 0);
+	EXPECT_EQ(q.capacity(), 10);
 	ASSERT_ANY_THROW(q.head());
 	ASSERT_ANY_THROW(q.tail());
+}
+
+TEST(QueueTest, SizeValueConstructor) {
+	Queue<int> q(10, 5);
+	EXPECT_EQ(q.isEmpty(), false);
+	EXPECT_EQ(q.isFull(), true);
+	EXPECT_EQ(q.size(), 10);
+	EXPECT_EQ(q.capacity(), 10);
+	EXPECT_EQ(q.head(), 5);
+	EXPECT_EQ(q.tail(), 5);
 }
 
 TEST(QueueTest, TVectorConstructor) {
@@ -23,6 +41,8 @@ TEST(QueueTest, TVectorConstructor) {
 	Queue<int> q(vec);
 	EXPECT_EQ(q.isEmpty(), false);
 	EXPECT_EQ(q.isFull(), true);
+	EXPECT_EQ(q.size(), 4);
+	EXPECT_EQ(q.capacity(), 4);
 	EXPECT_EQ(q.head(), 2);
 	EXPECT_EQ(q.tail(), -7);
 }
@@ -31,6 +51,8 @@ TEST(QueueTest, InitListConstructor) {
 	Queue<int> q({ 2, 7, 45, -3 });
 	EXPECT_EQ(q.isEmpty(), false);
 	EXPECT_EQ(q.isFull(), true);
+	EXPECT_EQ(q.size(), 4);
+	EXPECT_EQ(q.capacity(), 4);
 	EXPECT_EQ(q.head(), 2);
 	EXPECT_EQ(q.tail(), -3);
 }
@@ -40,11 +62,15 @@ TEST(QueueTest, CopyConstructor) {
 	Queue<int> q2(q1);
 	EXPECT_EQ(q2.isEmpty(), false);
 	EXPECT_EQ(q2.isFull(), true);
+	EXPECT_EQ(q2.size(), 4);
+	EXPECT_EQ(q2.capacity(), 4);
 	EXPECT_EQ(q2.head(), 9);
 	EXPECT_EQ(q2.tail(), 6);
 
 	q1.pop();
 	EXPECT_EQ(q2.head(), 9);
+	EXPECT_EQ(q2.size(), 4);
+	EXPECT_EQ(q2.capacity(), 4);
 }
 
 TEST(QueueTest, AssignQueue) {
@@ -53,12 +79,16 @@ TEST(QueueTest, AssignQueue) {
 	q1.assign(q2);
 	EXPECT_EQ(q1.isEmpty(), false);
 	EXPECT_EQ(q1.isFull(), true);
+	EXPECT_EQ(q1.size(), 4);
+	EXPECT_EQ(q1.capacity(), 4);
 	EXPECT_EQ(q1.head(), 1);
 	EXPECT_EQ(q1.tail(), 4);
 
 	q2.pop();
 	EXPECT_EQ(q1.head(), 1);
 	EXPECT_EQ(q1.tail(), 4);
+	EXPECT_EQ(q1.size(), 4);
+	EXPECT_EQ(q1.capacity(), 4);
 }
 
 TEST(QueueTest, AssignTVector) {
@@ -68,12 +98,16 @@ TEST(QueueTest, AssignTVector) {
 	q1.assign(data);
 	EXPECT_EQ(q1.isEmpty(), false);
 	EXPECT_EQ(q1.isFull(), true);
+	EXPECT_EQ(q1.size(), 6);
+	EXPECT_EQ(q1.capacity(), 6);
 	EXPECT_EQ(q1.head(), 5);
 	EXPECT_EQ(q1.tail(), 7);
 
 	data.pop_back();
 	EXPECT_EQ(q1.head(), 5);
 	EXPECT_EQ(q1.tail(), 7);
+	EXPECT_EQ(q1.size(), 6);
+	EXPECT_EQ(q1.capacity(), 6);
 }
 
 TEST(QueueTest, ToTVector) {

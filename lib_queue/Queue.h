@@ -17,6 +17,7 @@ public:
 	// Constructors
 	Queue();
 	Queue(size_t);
+	Queue(size_t, const T&);
 	Queue(const TVector<T>&);
 	Queue(const std::initializer_list<T>);
 	Queue(const Queue&);
@@ -65,10 +66,26 @@ template<class T> Queue<T>::Queue(size_t size) :
 	_head(0),
 	_tail(0)
 {
-	if (size <= 0) {
+	if (size == 0) {
 		throw std::invalid_argument("Queue.size_constructor: 'size' must be > 0");
 	}
 	_data = new T[size];
+}
+
+template<class T> Queue<T>::Queue(size_t size, const T& value) :
+	_data(nullptr),
+	_size(size),
+	_count(size),
+	_head(0),
+	_tail(_count % _size)
+{
+	if (size == 0) {
+		throw std::invalid_argument("Queue.size_constructor: 'size' must be > 0");
+	}
+	_data = new T[size];
+	for (size_t i = 0; i < _size; i++) {
+		_data[i] = value;
+	}
 }
 
 template<class T> Queue<T>::Queue(const TVector<T>& vector) :
