@@ -156,6 +156,73 @@ TEST(StackTest, Clear) {
 	EXPECT_EQ(s.capacity(), 3);
 }
 
+TEST(StackTest, ReserveLessElements) {
+	Stack<int> s({ 4, 7, 8 });
+	EXPECT_EQ(s.isEmpty(), false);
+	EXPECT_EQ(s.isFull(), true);
+	EXPECT_EQ(s.size(), 3);
+	EXPECT_EQ(s.capacity(), 3);
+
+	s.reserve(1);
+
+	EXPECT_EQ(s.isEmpty(), false);
+	EXPECT_EQ(s.isFull(), true);
+	EXPECT_EQ(s.size(), 3);
+	EXPECT_EQ(s.capacity(), 3);
+}
+
+TEST(StackTest, ReserveMoreElements) {
+	Stack<int> s({ 1, 2, 3 });
+	EXPECT_EQ(s.isEmpty(), false);
+	EXPECT_EQ(s.isFull(), true);
+	EXPECT_EQ(s.size(), 3);
+	EXPECT_EQ(s.capacity(), 3);
+
+	s.reserve(10);
+
+	EXPECT_EQ(s.isEmpty(), false);
+	EXPECT_EQ(s.isFull(), false);
+	EXPECT_EQ(s.size(), 3);
+	EXPECT_EQ(s.capacity(), 10);
+}
+
+TEST(StackTest, ShrinkToFitToEmptyException) {
+	Stack<int> s;
+	ASSERT_ANY_THROW(s.shrinkToFit());
+}
+
+TEST(StackTest, ShrinkToFitFull) {
+	Stack<int> s({ 4, 7, 8 });
+	EXPECT_EQ(s.isEmpty(), false);
+	EXPECT_EQ(s.isFull(), true);
+	EXPECT_EQ(s.size(), 3);
+	EXPECT_EQ(s.capacity(), 3);
+
+	s.shrinkToFit();
+
+	EXPECT_EQ(s.isEmpty(), false);
+	EXPECT_EQ(s.isFull(), true);
+	EXPECT_EQ(s.size(), 3);
+	EXPECT_EQ(s.capacity(), 3);
+}
+
+TEST(StackTest, ShrinkToFit) {
+	Stack<int> s({ 4, 7, 8 });
+	EXPECT_EQ(s.isEmpty(), false);
+	EXPECT_EQ(s.isFull(), true);
+	EXPECT_EQ(s.size(), 3);
+	EXPECT_EQ(s.capacity(), 3);
+
+	s.pop();
+	s.pop();
+	s.shrinkToFit();
+
+	EXPECT_EQ(s.isEmpty(), false);
+	EXPECT_EQ(s.isFull(), true);
+	EXPECT_EQ(s.size(), 1);
+	EXPECT_EQ(s.capacity(), 1);
+}
+
 TEST(StackTest, TopExeption) {
 	Stack<int> s({2});
 	EXPECT_EQ(s.top(), 2);

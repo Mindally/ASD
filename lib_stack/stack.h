@@ -34,6 +34,9 @@ public:
 	const T& top() const;
 	void clear() noexcept;
 
+	void reserve(size_t) noexcept;
+	void shrinkToFit();
+
 	// Getters
 	inline bool isEmpty() const noexcept { return _top == -1; }
 	inline bool isFull() const noexcept { return _top == static_cast<int>(_size - 1); }
@@ -193,6 +196,35 @@ template<class T> const T& Stack<T>::top() const {
 template<class T> void Stack<T>::clear() noexcept {
 	_top = -1;
 }
+
+template<class T> void Stack<T>::reserve(size_t newCapacity) noexcept {
+	if (newCapacity <= _size) return;
+	T* newData = new T[newCapacity];
+	for (size_t i = 0; i < _size; i++) {
+		newData[i] = _data[i];
+	}
+	for (size_t i = _size; i < newCapacity; i++) {
+		newData[i] = T();
+	}
+	delete[] _data;
+	_data = newData;
+	_size = newCapacity;
+}
+
+template<class T> void Stack<T>::shrinkToFit() {
+	if (isEmpty()) {
+		throw std::logic_error("Stack.shrinkToFit: Undable to shrink - stack is empty");
+	}
+	if (isFull()) return;
+	T* newData = new T[_top + 1];
+	for (size_t i = 0; i <= _top; i++) {
+		newData[i] = _data[i];
+	}
+	delete[] _data;
+	_data = newData;
+	_size = _top + 1;
+}
+
 
 // Operators overload
 
