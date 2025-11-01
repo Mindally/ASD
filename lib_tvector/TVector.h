@@ -1,14 +1,16 @@
 // "Copyright 2025 Artem Denisov 3824B1PR2"
+#pragma once
+
 #include <iostream>
 #include <utility>
 #include <random>
 #include <chrono>
 #include <initializer_list>
-#pragma once
+
 #define CAPACITY 15
 #define DELETED_LIMIT 0.15
 
-enum class TVectorElemState { empty, busy, deleted };
+enum class TVectorElemState { Empty, Busy, Deleted };
 
 template<class T> class TVector {
     T* _data;
@@ -32,17 +34,16 @@ public:
     ~TVector();
 
     // Getters
-    inline T* data() const noexcept { return _data; };
+    bool is_empty() const noexcept { return size() == 0; };
+    bool is_full() const noexcept { return size() >= _capacity; };
     inline size_t size() const noexcept { return _size - _deleted; };
     inline size_t capacity() const noexcept { return _capacity; };
     inline T& front() const { return at(0); };
     inline T& back() const { return at(size() - 1); };
-    inline T* begin() const;
-    inline T* end() const;
 
     // Functions
-    bool is_empty() const noexcept;
-    bool is_full() const noexcept;
+    T* toArray() const;
+
     T& at(size_t) const;
     void emplace(size_t, const T&);
     void assign(const TVector<T>&);
@@ -89,7 +90,7 @@ template<class T> TVector<T>::TVector() :
 {
     _data = new T[_capacity];
     _states = new TVectorElemState[_capacity];
-    for (int i = 0; i < _capacity; i++) _states[i] = TVectorElemState::empty;
+    for (size_t i = 0; i < _capacity; i++) _states[i] = TVectorElemState::Empty;
 }
 
 template<class T> TVector<T>::TVector(size_t size) :
@@ -104,17 +105,17 @@ template<class T> TVector<T>::TVector(size_t size) :
     if (_size == 0) {
         _data = new T[_capacity];
         _states = new TVectorElemState[_capacity];
-        for (int i = 0; i < _capacity; i++) _states[i] = TVectorElemState::empty;
+        for (size_t i = 0; i < _capacity; i++) _states[i] = TVectorElemState::Empty;
     }
     else {
         _capacity = _size + CAPACITY;
         _data = new T[_capacity];
         _states = new TVectorElemState[_capacity];
-        for (int i = 0; i < _size; i++) {
-            _states[i] = TVectorElemState::busy;
+        for (size_t i = 0; i < _size; i++) {
+            _states[i] = TVectorElemState::Busy;
         }
-        for (int i = _size; i < _capacity; i++) {
-            _states[i] = TVectorElemState::empty;
+        for (size_t i = _size; i < _capacity; i++) {
+            _states[i] = TVectorElemState::Empty;
         }
     }
 }
@@ -137,10 +138,10 @@ template<class T> TVector<T>::TVector(size_t size, const T* data) :
     _states = new TVectorElemState[_capacity];
     for (size_t i = 0; i < _size; i++) {
         _data[i] = data[i];
-        _states[i] = TVectorElemState::busy;
+        _states[i] = TVectorElemState::Busy;
     }
     for (size_t i = _size; i < _capacity; i++) {
-        _states[i] = TVectorElemState::empty;
+        _states[i] = TVectorElemState::Empty;
     }
 }
 
@@ -158,10 +159,10 @@ template<class T> TVector<T>::TVector(std::initializer_list<T> init) :
         const T* src = init.begin();
         for (size_t i = 0; i < _size; i++) {
             _data[i] = src[i];
-            _states[i] = TVectorElemState::busy;
+            _states[i] = TVectorElemState::Busy;
         }
         for (size_t i = _size; i < _capacity; i++) {
-            _states[i] = TVectorElemState::empty;
+            _states[i] = TVectorElemState::Empty;
         }
     }
 }
@@ -182,10 +183,10 @@ template<class T> TVector<T>::TVector(size_t size, std::initializer_list<T> init
     const T* src = init.begin();
     for (size_t i = 0; i < _size; i++) {
         _data[i] = src[i];
-        _states[i] = TVectorElemState::busy;
+        _states[i] = TVectorElemState::Busy;
     }
     for (size_t i = _size; i < _capacity; i++) {
-        _states[i] = TVectorElemState::empty;
+        _states[i] = TVectorElemState::Empty;
     }
 }
 
@@ -216,8 +217,8 @@ template<class T> TVector<T>::TVector(TVector&& other) noexcept :
 
 }
 
-
 // Destructor
+
 template<class T> TVector<T>::~TVector() {
     if (_data != nullptr) {
         delete[] _data;
@@ -226,16 +227,16 @@ template<class T> TVector<T>::~TVector() {
 }
 
 // Functions
-template<class T> bool TVector<T>::is_empty() const noexcept {
-    if (size() == 0) return true;
-    for (size_t i = 0; i < size(); i++) {
-        if (_states[i] == TVectorElemState::busy) return false;
-    }
-    return true;
-}
 
-template<class T> bool TVector<T>::is_full() const noexcept {
-    return size() >= _capacity;
+template<class T> T* TVector<T>::toArray() const {
+    if (size() == 0) {
+        return nullptr;
+    }
+    T* array = new T[size()];
+    for (size_t i = 0; i < size(); i++) {
+        array[i] = at(i);
+    }
+    return array;
 }
 
 template<class T> T& TVector<T>::at(size_t index) const {
@@ -271,27 +272,27 @@ template<class T> void TVector<T>::assign(const TVector<T>& other) {
 // Insertion functions
 template<class T> void TVector<T>::push_front(const T& value) {
     if (_size == 0) _size++;
-    if (_states[0] == TVectorElemState::busy) {
+    if (_states[0] == TVectorElemState::Busy) {
         _size++;
         if (is_full()) reserve(_size + CAPACITY);
         swap_elements(_size - 1, 0);
     }
-    if (_states[0] == TVectorElemState::deleted) _deleted--;
+    if (_states[0] == TVectorElemState::Deleted) _deleted--;
     if (_size == size()) _is_clean = true;
     _data[0] = value;
-    _states[0] = TVectorElemState::busy;
+    _states[0] = TVectorElemState::Busy;
 }
 
 template<class T> void TVector<T>::push_back(const T& value) {
     if (_size == 0) _size++;
-    if (_states[_size - 1] == TVectorElemState::busy) {
+    if (_states[_size - 1] == TVectorElemState::Busy) {
         _size++;
         if (is_full()) reserve(_size + CAPACITY);
     }
-    if (_states[_size - 1] == TVectorElemState::deleted) _deleted--;
+    if (_states[_size - 1] == TVectorElemState::Deleted) _deleted--;
     if (_size == size()) _is_clean = true;
     _data[_size - 1] = value;
-    _states[_size - 1] = TVectorElemState::busy;
+    _states[_size - 1] = TVectorElemState::Busy;
 }
 
 template<class T> void TVector<T>::insert(size_t index, const T& value) {
@@ -300,7 +301,7 @@ template<class T> void TVector<T>::insert(size_t index, const T& value) {
     if (is_full()) reserve(_size + CAPACITY);
     swap_elements(_size - 1, real_index);
     _data[real_index] = value;
-    _states[real_index] = TVectorElemState::busy;
+    _states[real_index] = TVectorElemState::Busy;
 }
 
 // Deletion functions
@@ -308,7 +309,7 @@ template<class T> void TVector<T>::pop_front() {
     if (is_empty()) {
         throw std::logic_error("TVector.pop_front: Impossible to delete - there are no elements in the vector");
     }
-    _states[translate_index(0)] = TVectorElemState::deleted;
+    _states[translate_index(0)] = TVectorElemState::Deleted;
     _deleted++;
     _is_clean = false;
     if (_deleted >= static_cast<size_t>(_size * DELETED_LIMIT)) {
@@ -321,13 +322,13 @@ template<class T> void TVector<T>::pop_back() {
         throw std::logic_error("TVector.pop_back: Impossible to delete - there are no elements in the vector");
     }
     size_t index = 0;
-    for (int i = _size - 1; i >= 0; i--) {
-        if (_states[i] == TVectorElemState::busy) {
+    for (size_t i = _size - 1; i >= 0; i--) {
+        if (_states[i] == TVectorElemState::Busy) {
             index = i;
             break;
         }
     }
-    _states[index] = TVectorElemState::empty;
+    _states[index] = TVectorElemState::Empty;
     _size--;
 }
 
@@ -340,7 +341,7 @@ template<class T> void TVector<T>::erase(size_t index) {
         pop_back();
         return;
     }
-    _states[real_index] = TVectorElemState::deleted;
+    _states[real_index] = TVectorElemState::Deleted;
     _deleted++;
     _is_clean = false;
     if (_deleted >= static_cast<size_t>(_size * DELETED_LIMIT)) {
@@ -353,7 +354,7 @@ template<class T> void TVector<T>::clear() noexcept {
     _size = 0;
     _deleted = 0;
     _is_clean = true;
-    for (size_t i = 0; i < _capacity; i++) _states[i] = TVectorElemState::empty;
+    for (size_t i = 0; i < _capacity; i++) _states[i] = TVectorElemState::Empty;
 }
 
 template<class T> void TVector<T>::shrink_to_fit() {
@@ -382,7 +383,7 @@ template<class T> void TVector<T>::reserve(size_t new_capacity) {
             new_data[i] = _data[i];
             new_states[i] = _states[i];
         }
-        for (size_t i = _capacity; i < new_capacity; i++) new_states[i] = TVectorElemState::empty;
+        for (size_t i = _capacity; i < new_capacity; i++) new_states[i] = TVectorElemState::Empty;
         delete[] _data;
         delete[] _states;
         _data = new_data;
@@ -398,11 +399,11 @@ template<class T> void TVector<T>::resize(size_t new_size) {
     cleanup();
     if (new_size == size()) return;
     if (new_size < size()) {
-        for (size_t i = new_size; i < _size; i++) _states[i] = TVectorElemState::empty;
+        for (size_t i = new_size; i < _size; i++) _states[i] = TVectorElemState::Empty;
     }
     else {
         if (new_size >= _capacity) reserve(new_size + CAPACITY);
-        for (size_t i = _size; i < new_size; i++) _states[i] = TVectorElemState::empty;
+        for (size_t i = _size; i < new_size; i++) _states[i] = TVectorElemState::Empty;
     }
     _size = new_size;
 }
@@ -452,13 +453,13 @@ template<class T> void TVector<T>::cleanup() {
     size_t new_size = size();
     size_t index = 0;
     for (size_t i = 0; i < _size; i++) {
-        if (_states[i] == TVectorElemState::busy) {
+        if (_states[i] == TVectorElemState::Busy) {
             _data[index] = _data[i];
-            _states[index] = TVectorElemState::busy;
+            _states[index] = TVectorElemState::Busy;
             index++;
         }
     }
-    for (size_t i = new_size; i < _capacity; i++) _states[i] = TVectorElemState::empty;
+    for (size_t i = new_size; i < _capacity; i++) _states[i] = TVectorElemState::Empty;
     _size = new_size;
     _deleted = 0;
 }
@@ -474,7 +475,7 @@ template<class T> size_t TVector<T>::translate_index(size_t index) const {
 
     size_t busy_found = 0;
     for (size_t i = 0; i < _size; i++) {
-        if (_states[i] == TVectorElemState::busy) {
+        if (_states[i] == TVectorElemState::Busy) {
             if (busy_found == index) {
                 return i;
             }

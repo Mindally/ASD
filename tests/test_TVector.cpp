@@ -58,6 +58,21 @@ TEST(TVectorTest, CopyConstructor) {
     EXPECT_EQ(vec1 == vec2, true);
 }
 
+TEST(TVectorTest, ToEmptyArray) {
+    TVector<int> vec1;
+    int* array = vec1.toArray();
+    EXPECT_EQ(array, nullptr);
+}
+
+TEST(TVectorTest, ToArray) {
+    TVector<int> vec1({1, 2, 3});
+    int* array = vec1.toArray();
+    EXPECT_EQ(array[0], 1);
+    EXPECT_EQ(array[1], 2);
+    EXPECT_EQ(array[2], 3);
+    delete[] array;
+}
+
 TEST(TVectorTest, IsEmpty) {
     TVector<int> empty1, fake_empty(2);
     fake_empty.pop_front();
@@ -74,7 +89,6 @@ TEST(TVectorTest, AtFirstTest) {
     vec1.pop_back();
     vec1.pop_back();
     vec1.erase(2);
-    bool actual_result = (vec1 == vec2);
     EXPECT_EQ(vec1 == vec2, true);
 }
 
