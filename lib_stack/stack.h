@@ -9,12 +9,13 @@
 
 template<class T> class Stack {
 	T* _data;
-	int _top;
 	size_t _size;
+	int _top;
 public:
 	// Constructors
 	Stack();
 	Stack(size_t);
+	Stack(size_t, const T&);
 	Stack(const TVector<T>&);
 	Stack(const std::initializer_list<T>);
 	Stack(const Stack&);
@@ -61,6 +62,20 @@ template<class T> Stack<T>::Stack(size_t size) :
 		throw std::logic_error("Stack.size_constructor: 'size' must be > 0");
 	}
 	_data = new T[_size];
+}
+
+template<class T> Stack<T>::Stack(size_t size, const T& value) :
+	_data(nullptr),
+	_size(size),
+	_top(static_cast<int>(size - 1))
+{
+	if (size == 0) {
+		throw std::logic_error("Stack.sizevalue_constructor: 'size' must be > 0");
+	}
+	_data = new T[_size];
+	for (size_t i = 0; i < _size; i++) {
+		_data[i] = value;
+	}
 }
 
 template<class T> Stack<T>::Stack(const TVector<T>& vector) :
@@ -130,7 +145,7 @@ template<class T> Stack<T>& Stack<T>::assign(const TVector<T>& vector) {
 	}
 	delete[] _data;
 	_size = vector.size();
-	_top = vector.size() - 1;
+	_top = static_cast<int>(vector.size() - 1);
 	_data = new T[_size];
 	for (int i = 0; i < _size; i++) {
 		_data[i] = vector[i];

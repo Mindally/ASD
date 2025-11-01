@@ -6,13 +6,31 @@ TEST(StackTest, DefaultConstructor) {
 	Stack<int> s;
 	EXPECT_EQ(s.isEmpty(), true);
 	EXPECT_EQ(s.isFull(), false);
+	EXPECT_EQ(s.size(), 0);
+	EXPECT_EQ(s.capacity(), STACK_DEFAULT_SIZE);
+	ASSERT_ANY_THROW(s.top());
+}
+
+TEST(StackTest, ZeroSizeConstructor) {
+	ASSERT_ANY_THROW(Stack<int> s(0));
 }
 
 TEST(StackTest, SizeConstructor) {
 	Stack<int> s(10);
 	EXPECT_EQ(s.isEmpty(), true);
 	EXPECT_EQ(s.isFull(), false);
+	EXPECT_EQ(s.size(), 0);
+	EXPECT_EQ(s.capacity(), 10);
 	ASSERT_ANY_THROW(s.top());
+}
+
+TEST(StackTest, SizeValueConstructor) {
+	Stack<int> s(10, 5);
+	EXPECT_EQ(s.isEmpty(), false);
+	EXPECT_EQ(s.isFull(), true);
+	EXPECT_EQ(s.size(), 10);
+	EXPECT_EQ(s.capacity(), 10);
+	EXPECT_EQ(s.top(), 5);
 }
 
 TEST(StackTest, TVectorConstructor) {
@@ -20,14 +38,18 @@ TEST(StackTest, TVectorConstructor) {
 	Stack<int> s(vec);
 	EXPECT_EQ(s.isEmpty(), false);
 	EXPECT_EQ(s.isFull(), true);
+	EXPECT_EQ(s.size(), 4);
+	EXPECT_EQ(s.capacity(), 4);
 	EXPECT_EQ(s.top(), -7);
 }
 
 TEST(StackTest, InitListConstructor) {
-	Stack<int> s({ 2, 7, 45, -88 });
+	Stack<int> s({ 2, 7, 45, -8 });
 	EXPECT_EQ(s.isEmpty(), false);
 	EXPECT_EQ(s.isFull(), true);
-	EXPECT_EQ(s.top(), -88);
+	EXPECT_EQ(s.size(), 4);
+	EXPECT_EQ(s.capacity(), 4);
+	EXPECT_EQ(s.top(), -8);
 }
 
 TEST(StackTest, CopyConstructor) {
@@ -35,6 +57,8 @@ TEST(StackTest, CopyConstructor) {
 	Stack<int> s2(s1);
 	EXPECT_EQ(s2.isEmpty(), false);
 	EXPECT_EQ(s2.isFull(), true);
+	EXPECT_EQ(s2.size(), 4);
+	EXPECT_EQ(s2.capacity(), 4);
 	EXPECT_EQ(s2.top(), 6);
 
 	s1.pop();
@@ -47,6 +71,8 @@ TEST(StackTest, AssignStack) {
 	s1.assign(s2);
 	EXPECT_EQ(s1.isEmpty(), false);
 	EXPECT_EQ(s1.isFull(), true);
+	EXPECT_EQ(s1.size(), 4);
+	EXPECT_EQ(s1.capacity(), 4);
 	EXPECT_EQ(s1.top(), 6);
 
 	s2.pop();
@@ -59,6 +85,8 @@ TEST(StackTest, AssignTVector) {
 	s1.assign(vec);
 	EXPECT_EQ(s1.isEmpty(), false);
 	EXPECT_EQ(s1.isFull(), true);
+	EXPECT_EQ(s1.size(), 4);
+	EXPECT_EQ(s1.capacity(), 4);
 	EXPECT_EQ(s1.top(), 40);
 
 	vec.pop_back();
@@ -84,6 +112,8 @@ TEST(StackTest, PushFromEmpty) {
 	s.pop();
 	EXPECT_EQ(s.isEmpty(), true);
 	s.push(10);
+	EXPECT_EQ(s.size(), 1);
+	EXPECT_EQ(s.capacity(), 2);
 	EXPECT_EQ(s.top(), 10);
 }
 
@@ -92,6 +122,8 @@ TEST(StackTest, Push) {
 	s.push(-12);
 	EXPECT_EQ(s.isEmpty(), false);
 	EXPECT_EQ(s.isFull(), false);
+	EXPECT_EQ(s.size(), 1);
+	EXPECT_EQ(s.capacity(), 10);
 	EXPECT_EQ(s.top(), -12);
 }
 
@@ -110,6 +142,8 @@ TEST(StackTest, Pop) {
 
 	s.pop();
 	EXPECT_EQ(s.isEmpty(), true);
+	EXPECT_EQ(s.size(), 0);
+	EXPECT_EQ(s.capacity(), 3);
 	ASSERT_ANY_THROW(s.top());
 }
 
@@ -118,6 +152,8 @@ TEST(StackTest, Clear) {
 	s.clear();
 	EXPECT_EQ(s.isEmpty(), true);
 	EXPECT_EQ(s.isFull(), false);
+	EXPECT_EQ(s.size(), 0);
+	EXPECT_EQ(s.capacity(), 3);
 }
 
 TEST(StackTest, TopExeption) {
