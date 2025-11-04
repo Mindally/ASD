@@ -203,9 +203,6 @@ template<class T> void Stack<T>::reserve(size_t newCapacity) noexcept {
 	for (size_t i = 0; i < _size; i++) {
 		newData[i] = _data[i];
 	}
-	for (size_t i = _size; i < newCapacity; i++) {
-		newData[i] = T();
-	}
 	delete[] _data;
 	_data = newData;
 	_size = newCapacity;
