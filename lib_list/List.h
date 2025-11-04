@@ -176,22 +176,22 @@ template<class T> List<T>::List() :
 	_size(0)
 {}
 
-template<class T> List<T>::List(size_t size) : // Can be optimized
+template<class T> List<T>::List(size_t size) :
 	_head(nullptr),
 	_tail(nullptr),
 	_size(0)
 {
-	for (int i = 0; i < size; i++) {
+	for (size_t i = 0; i < size; i++) {
 		pushBack(T());
 	}
 }
 
-template<class T> List<T>::List(size_t size, const T& value) : // Can be optimized
+template<class T> List<T>::List(size_t size, const T& value) :
 	_head(nullptr),
 	_tail(nullptr),
 	_size(0)
 {
-	for (int i = 0; i < size; i++) {
+	for (size_t i = 0; i < size; i++) {
 		pushBack(value);
 	}
 }
@@ -201,8 +201,10 @@ template<class T> List<T>::List(const TVector<T>& vector) :
 	_tail(nullptr),
 	_size(0)
 {
-	for (int i = 0; i < vector.size(); i++) {
-		pushBack(vector[i]);
+	if (!vector.is_empty()) {
+		for (size_t i = 0; i < vector.size(); i++) {
+			pushBack(vector[i]);
+		}
 	}
 }
 
@@ -255,7 +257,7 @@ template<class T> List<T>& List<T>::assign(const TVector<T>& vector) {
 	}
 
 	clear();
-	for (int i = 0; i < vector.size(); i++) {
+	for (size_t i = 0; i < vector.size(); i++) {
 		pushBack(vector[i]);
 	}
 
@@ -296,17 +298,18 @@ template<class T> void List<T>::pushFront(const T& value) {
 	_head = node;
 }
 
-template<class T> void List<T>::pushBack(const T& value) { // O(n)
+template<class T> void List<T>::pushBack(const T& value) {
 	_size++;
 	singly_linked::Node<T>* node = new singly_linked::Node<T>(value, nullptr);
 
 	if (isEmpty()) {
 		_head = node;
 		_tail = node;
-		return;
 	}
-	_tail->next = node;
-	_tail = node;
+	else {
+		_tail->next = node;
+		_tail = node;
+	}
 }
 
 template<class T> void List<T>::insert(size_t pos, const T& value) {
@@ -316,24 +319,22 @@ template<class T> void List<T>::insert(size_t pos, const T& value) {
 
 	if (pos == 0) {
 		pushFront(value);
-		return;
 	}
-
-	if (pos == _size) {
+	else if (pos == _size) {
 		pushBack(value);
-		return;
 	}
-
-	singly_linked::Node<T>* current = _head;
-	size_t currentPos = 0;
-	while (current != nullptr) {
-		if (currentPos == pos - 1) {
-			break;
+	else {
+		singly_linked::Node<T>* current = _head;
+		size_t currentPos = 0;
+		while (current != nullptr) {
+			if (currentPos == pos - 1) {
+				break;
+			}
+			currentPos++;
+			current = current->next;
 		}
-		currentPos++;
-		current = current->next;
+		insertAtNode(current, value);
 	}
-	insertAtNode(current, value);
 }
 
 template<class T> void List<T>::insertAtNode(singly_linked::Node<T>* pos, const T& value) {
@@ -394,33 +395,32 @@ template<class T> void List<T>::erase(size_t pos) {
 		throw std::out_of_range("List.insert: 'pos' out of range");
 	}
 
+	if (isEmpty()) {
+		throw std::logic_error("List.erase: List is empty");
+	}
+
 	if (pos == 0) {
 		popFront();
-		return;
 	}
-
-	if (pos == _size - 1) {
+	else if (pos == _size - 1) {
 		popBack();
-		return;
 	}
+	else {
+		singly_linked::Node<T>* current = _head;
+		size_t currentPos = 0;
+		while (current != nullptr && currentPos < pos - 1) {
+			currentPos++;
+			current = current->next;
+		}
 
-	singly_linked::Node<T>* current = _head;
-	size_t currentPos = 0;
-	while (current != nullptr && currentPos < pos - 1) {
-		currentPos++;
-		current = current->next;
+		singly_linked::Node<T>* toDelete = current->next;
+		current->next = toDelete->next;
+		delete toDelete;
+		_size--;
 	}
-
-	singly_linked::Node<T>* toDelete = current->next;
-	current->next = toDelete->next;
-	if (toDelete == _tail) {
-		_tail = current;
-	}
-	delete toDelete;
-	_size--;
 }
 
-template<class T> void List<T>::eraseNode(singly_linked::Node<T>* pos) { // O(n)
+template<class T> void List<T>::eraseNode(singly_linked::Node<T>* pos) {
 	if (pos == nullptr) {
 		throw std::logic_error("List.erase: Node pointer is null");
 	}
@@ -431,28 +431,22 @@ template<class T> void List<T>::eraseNode(singly_linked::Node<T>* pos) { // O(n)
 
 	if (pos == _head) {
 		popFront();
-		return;
 	}
-
-	if (pos == _tail) {
+	else if (pos == _tail) {
 		popBack();
-		return;
 	}
-
-	singly_linked::Node<T>* current = _head;
-	while (current->next != pos) {
-		if (current->next == nullptr) {
-			throw std::invalid_argument("List.erase: Node not found in list");
+	else {
+		singly_linked::Node<T>* current = _head;
+		while (current->next != pos) {
+			if (current->next == nullptr) {
+				throw std::invalid_argument("List.erase: Node not found in list");
+			}
+			current = current->next;
 		}
-		current = current->next;
+		current->next = pos->next;
+		delete pos;
+		_size--;
 	}
-
-	current->next = pos->next;
-	if (pos == _tail) {
-		_tail = current;
-	}
-	delete pos;
-	_size--;
 }
 
 template<class T> void List<T>::clear() {
