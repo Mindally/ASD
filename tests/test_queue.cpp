@@ -160,6 +160,89 @@ TEST(QueueTest, Clear) {
 	EXPECT_EQ(q.isFull(), false);
 }
 
+TEST(QueueTest, ReserveLessElements) {
+	Queue<int> q({ 4, 7, 8 });
+	EXPECT_EQ(q.isEmpty(), false);
+	EXPECT_EQ(q.isFull(), true);
+	EXPECT_EQ(q.tail(), 8);
+	EXPECT_EQ(q.head(), 4);
+	EXPECT_EQ(q.size(), 3);
+	EXPECT_EQ(q.capacity(), 3);
+
+	q.reserve(1);
+
+	EXPECT_EQ(q.isEmpty(), false);
+	EXPECT_EQ(q.isFull(), true);
+	EXPECT_EQ(q.tail(), 8);
+	EXPECT_EQ(q.head(), 4);
+	EXPECT_EQ(q.size(), 3);
+	EXPECT_EQ(q.capacity(), 3);
+}
+
+TEST(QueueTest, ReserveMoreElements) {
+	Queue<int> q({ 1, 2, 3 });
+	EXPECT_EQ(q.isEmpty(), false);
+	EXPECT_EQ(q.isFull(), true);
+	EXPECT_EQ(q.tail(), 3);
+	EXPECT_EQ(q.head(), 1);
+	EXPECT_EQ(q.size(), 3);
+	EXPECT_EQ(q.capacity(), 3);
+
+	q.reserve(10);
+
+	EXPECT_EQ(q.isEmpty(), false);
+	EXPECT_EQ(q.isFull(), false);
+	EXPECT_EQ(q.tail(), 3);
+	EXPECT_EQ(q.head(), 1);
+	EXPECT_EQ(q.size(), 3);
+	EXPECT_EQ(q.capacity(), 10);
+}
+
+TEST(QueueTest, ShrinkToFitToEmptyException) {
+	Queue<int> q;
+	ASSERT_ANY_THROW(q.shrinkToFit());
+}
+
+TEST(QueueTest, ShrinkToFitFull) {
+	Queue<int> q({ 4, 7, 8 });
+	EXPECT_EQ(q.isEmpty(), false);
+	EXPECT_EQ(q.isFull(), true);
+	EXPECT_EQ(q.tail(), 8);
+	EXPECT_EQ(q.head(), 4);
+	EXPECT_EQ(q.size(), 3);
+	EXPECT_EQ(q.capacity(), 3);
+
+	q.shrinkToFit();
+
+	EXPECT_EQ(q.isEmpty(), false);
+	EXPECT_EQ(q.isFull(), true);
+	EXPECT_EQ(q.tail(), 8);
+	EXPECT_EQ(q.head(), 4);
+	EXPECT_EQ(q.size(), 3);
+	EXPECT_EQ(q.capacity(), 3);
+}
+
+TEST(QueueTest, ShrinkToFit) {
+	Queue<int> q({ 4, 7, 8 });
+	EXPECT_EQ(q.isEmpty(), false);
+	EXPECT_EQ(q.isFull(), true);
+	EXPECT_EQ(q.tail(), 8);
+	EXPECT_EQ(q.head(), 4);
+	EXPECT_EQ(q.size(), 3);
+	EXPECT_EQ(q.capacity(), 3);
+
+	q.pop();
+	q.pop();
+	q.shrinkToFit();
+
+	EXPECT_EQ(q.isEmpty(), false);
+	EXPECT_EQ(q.isFull(), true);
+	EXPECT_EQ(q.tail(), 8);
+	EXPECT_EQ(q.head(), 8);
+	EXPECT_EQ(q.size(), 1);
+	EXPECT_EQ(q.capacity(), 1);
+}
+
 TEST(QueueTest, IsEmpty) {
 	Queue<int> q;
 	EXPECT_EQ(q.isEmpty(), true);

@@ -38,6 +38,9 @@ public:
 	const T& tail() const;
 	void clear() noexcept;
 
+	void reserve(size_t) noexcept;
+	void shrinkToFit();
+
 	// Getters
 	inline bool isEmpty() const noexcept { return _count == 0; };
 	inline bool isFull() const noexcept { return _count == _size; };
@@ -228,6 +231,42 @@ template<class T> const T& Queue<T>::tail() const {
 
 template<class T> void Queue<T>::clear() noexcept {
 	_count = 0;
+	_head = 0;
+	_tail = 0;
+}
+
+template<class T> void Queue<T>::reserve(size_t newCapacity) noexcept {
+	if (newCapacity <= _size) return;
+	if (newCapacity <= _count) return;
+
+	T* newData = new T[newCapacity];
+
+	for (size_t i = 0; i < _count; i++) {
+		newData[i] = _data[(_head + i) % _size];
+	}
+
+	delete[] _data;
+	_data = newData;
+	_size = newCapacity;
+	_head = 0;
+	_tail = _count;
+}
+
+template<class T> void Queue<T>::shrinkToFit() {
+	if (isEmpty()) {
+		throw std::logic_error("Queue.shrinkToFit: Undable to shrink - queue is empty");
+	}
+	if (isFull()) return;
+
+	T* newData = new T[_count];
+
+	for (size_t i = 0; i < _count; i++) {
+		newData[i] = _data[(_head + i) % _size];
+	}
+
+	delete[] _data;
+	_data = newData;
+	_size = _count;
 	_head = 0;
 	_tail = 0;
 }
