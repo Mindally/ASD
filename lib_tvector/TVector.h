@@ -42,7 +42,7 @@ public:
     inline T& back() const { return at(size() - 1); };
 
     // Functions
-    T* toArray() const;
+    T* to_array() const;
 
     T& at(size_t) const;
     void emplace(size_t, const T&);
@@ -228,7 +228,7 @@ template<class T> TVector<T>::~TVector() {
 
 // Functions
 
-template<class T> T* TVector<T>::toArray() const {
+template<class T> T* TVector<T>::to_array() const {
     if (size() == 0) {
         return nullptr;
     }

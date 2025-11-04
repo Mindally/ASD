@@ -60,13 +60,13 @@ TEST(TVectorTest, CopyConstructor) {
 
 TEST(TVectorTest, ToEmptyArray) {
     TVector<int> vec1;
-    int* array = vec1.toArray();
+    int* array = vec1.to_array();
     EXPECT_EQ(array, nullptr);
 }
 
 TEST(TVectorTest, ToArray) {
     TVector<int> vec1({1, 2, 3});
-    int* array = vec1.toArray();
+    int* array = vec1.to_array();
     EXPECT_EQ(array[0], 1);
     EXPECT_EQ(array[1], 2);
     EXPECT_EQ(array[2], 3);
