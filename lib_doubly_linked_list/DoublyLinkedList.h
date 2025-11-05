@@ -152,9 +152,9 @@ public:
 			return *this;
 		}
 
-		ConstIterator operator--(int) {
+		ConstIterator operator++(int) {
 			ConstIterator iter = *this;
-			--(*this);
+			++(*this);
 			return iter;
 		}
 
@@ -165,7 +165,7 @@ public:
 			return *this;
 		}
 
-		ConstIterator operator++(int) {
+		ConstIterator operator--(int) {
 			ConstIterator iter = *this;
 			--(*this);
 			return iter;
@@ -332,7 +332,6 @@ template<class T> TVector<T> DoublyLinkedList<T>::toTVector() const {
 }
 
 template<class T> void DoublyLinkedList<T>::pushFront(const T& value) {
-	_size++;
 	doubly_linked::Node<T>* node = new doubly_linked::Node<T>(value, nullptr, _head);
 
 	if (_head != nullptr) {
@@ -343,10 +342,10 @@ template<class T> void DoublyLinkedList<T>::pushFront(const T& value) {
 		_tail = node;
 	}
 	_head = node;
+	_size++;
 }
 
 template<class T> void DoublyLinkedList<T>::pushBack(const T& value) {
-	_size++;
 	doubly_linked::Node<T>* node = new doubly_linked::Node<T>(value, _tail, nullptr);
 
 	if (isEmpty()) {
@@ -357,6 +356,7 @@ template<class T> void DoublyLinkedList<T>::pushBack(const T& value) {
 		_tail->next = node;
 		_tail = node;
 	}
+	_size++;
 }
 
 template<class T> void DoublyLinkedList<T>::insert(size_t pos, const T& value) {
@@ -394,10 +394,10 @@ template<class T> void DoublyLinkedList<T>::insertAtNode(doubly_linked::Node<T>*
 	}
 
 	doubly_linked::Node<T>* node = new doubly_linked::Node<T>(value, pos, pos->next);
-	pos->next = node;
 	if (node->next != nullptr) {
 		node->next->prev = node;
 	}
+	pos->next = node;
 	if (pos == _tail) {
 		_tail = node;
 	}
