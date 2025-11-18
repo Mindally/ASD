@@ -210,7 +210,7 @@ template<class T> T& Queue<T>::head() {
 
 template<class T> T& Queue<T>::tail() {
 	if (isEmpty()) {
-		throw std::logic_error("stack.top: Unable to get top element - stack is empty");
+		throw std::logic_error("Queue.top: Unable to get top element - Queue is empty");
 	}
 	return _data[(_tail - 1 + _size) % _size];
 }
@@ -224,7 +224,7 @@ template<class T> const T& Queue<T>::head() const {
 
 template<class T> const T& Queue<T>::tail() const {
 	if (isEmpty()) {
-		throw std::logic_error("stack.top: Unable to get top element - stack is empty");
+		throw std::logic_error("Queue.top: Unable to get top element - Queue is empty");
 	}
 	return _data[(_tail - 1 + _size) % _size];
 }
@@ -254,7 +254,7 @@ template<class T> void Queue<T>::reserve(size_t newCapacity) noexcept {
 
 template<class T> void Queue<T>::shrinkToFit() {
 	if (isEmpty()) {
-		throw std::logic_error("Queue.shrinkToFit: Undable to shrink - queue is empty");
+		throw std::logic_error("Queue.shrinkToFit: Unable to shrink - Queue is empty");
 	}
 	if (isFull()) return;
 
