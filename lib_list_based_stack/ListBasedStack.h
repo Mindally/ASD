@@ -2,6 +2,7 @@
 
 #include "../lib_TVector/TVector.h"
 #include "../lib_List/List.h"
+#include "../lib_stack/stack.h"
 
 #include <stdexcept>
 #include <initializer_list>
@@ -24,6 +25,7 @@ public:
 	ListBasedStack& assign(const ListBasedStack&);
 	ListBasedStack& assign(const TVector<T>&);
 	TVector<T> toTVector() const;
+	Stack<T> toStack() const;
 
 	void push(const T& val);
 	void pop();
@@ -117,6 +119,14 @@ template<class T> ListBasedStack<T>& ListBasedStack<T>::assign(const TVector<T>&
 
 template<class T> TVector<T> ListBasedStack<T>::toTVector() const {
 	return _data.toTVector();
+}
+
+template<class T> Stack<T> ListBasedStack<T>::toStack() const {
+	Stack<T> result(_data.size());
+	for (auto it = _data.begin(); it != _data.end(); ++it) {
+		result.push(*it);
+	}
+	return result;
 }
 
 template<class T> void ListBasedStack<T>::push(const T& val) {

@@ -101,6 +101,13 @@ TEST(ListBasedStackTest, ToTVector) {
 	EXPECT_TRUE(vec == data);
 }
 
+TEST(ListBasedStackTest, ToStack) {
+	ListBasedStack<int> s({ 1, 2, 3 });
+	Stack<int> result;
+	result = s.toStack();
+	EXPECT_EQ(result.top(), 3);
+}
+
 TEST(ListBasedStackTest, PushFromFullExeption) {
 	ListBasedStack<int> s({ 9, 0, 0, 6 });
 	ASSERT_ANY_THROW(s.push(7));
