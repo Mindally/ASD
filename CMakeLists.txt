@@ -14,6 +14,8 @@ add_subdirectory(lib_stack)
 add_subdirectory(lib_queue)
 add_subdirectory(lib_list)
 add_subdirectory(lib_doubly_linked_list)
+add_subdirectory(lib_list_based_stack)
+add_subdirectory(lib_list_based_queue)
 add_subdirectory(lib_algorithms)
 
 add_subdirectory(main)
