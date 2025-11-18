@@ -2,6 +2,7 @@
 
 #include "../lib_TVector/TVector.h"
 #include "../lib_list/List.h"
+#include "../lib_queue/Queue.h"
 
 #include <stdexcept>
 #include <initializer_list>
@@ -24,6 +25,7 @@ public:
 	ListBasedQueue& assign(const ListBasedQueue&);
 	ListBasedQueue& assign(const TVector<T>&);
 	TVector<T> toTVector() const;
+	Queue<T> toQueue() const;
 
 	void push(T val);
 	void pop();
@@ -119,6 +121,14 @@ template<class T> ListBasedQueue<T>& ListBasedQueue<T>::assign(const TVector<T>&
 
 template<class T> TVector<T> ListBasedQueue<T>::toTVector() const {
 	return _data.toTVector();
+}
+
+template<class T> Queue<T> ListBasedQueue<T>::toQueue() const {
+	Queue<T> result(_data.size());
+	for (auto it = _data.begin(); it != _data.end(); ++it) {
+		result.push(*it);
+	}
+	return result;
 }
 
 template<class T> void ListBasedQueue<T>::push(T val) {

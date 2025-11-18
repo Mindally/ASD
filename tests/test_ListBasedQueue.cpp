@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
 #include "../lib_list_based_queue/ListBasedQueue.h"
+#include "../lib_queue/Queue.h"
 
 TEST(ListBasedQueueTest, DefaultConstructor) {
 	ListBasedQueue<int> q;
@@ -116,6 +117,14 @@ TEST(ListBasedQueueTest, ToTVector) {
 	TVector<int> vec;
 	vec = q.toTVector();
 	EXPECT_TRUE(vec == data);
+}
+
+TEST(ListBasedQueueTest, ToQueue) {
+	ListBasedQueue<int> q({ 1, 2, 3 });
+	Queue<int> result;
+	result = q.toQueue();
+	EXPECT_EQ(result.head(), 1);
+	EXPECT_EQ(result.tail(), 3);
 }
 
 TEST(ListBasedQueueTest, PushFromFullExeption) {
