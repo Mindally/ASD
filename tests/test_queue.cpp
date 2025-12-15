@@ -2,6 +2,8 @@
 
 #include "../lib_queue/queue.h"
 
+// Тест на кольцевой буфер добавить
+
 TEST(QueueTest, DefaultConstructor) {
 	Queue<int> q;
 	EXPECT_EQ(q.isEmpty(), true);

@@ -357,6 +357,41 @@ TEST(DoublyLinkedListTest, IteratorReadOperations) {
 	EXPECT_EQ(values, std::vector<int>({ 1, 4, 3, 1 }));
 }
 
+TEST(DoublyLinkedListTest, IteratorReadOperationsBackwards) {
+	DoublyLinkedList<int> l({ 1, 4, 3 });
+	l.pushBack(1);
+
+	auto it = l.rbegin();
+	EXPECT_EQ(*it, 1);
+	--it;
+	EXPECT_EQ(*it, 3);
+	--it;
+	EXPECT_EQ(*it, 4);
+	--it;
+	EXPECT_EQ(*it, 1);
+
+	std::vector<int> values;
+	for (int val : l) {
+		values.push_back(val);
+	}
+	EXPECT_EQ(values, std::vector<int>({ 1, 4, 3, 1 }));
+}
+
+TEST(DoublyLinkedListTest, IteratorForWriteOperations) {
+	DoublyLinkedList<int> l({ 11, 22 });
+
+	int i = 2;
+	for (auto it = l.rbegin(); it != l.rend(); it--) {
+		*it *= i;
+		i++;
+	}
+	auto it = l.rbegin();
+	EXPECT_EQ(*it, 44);
+	--it;
+	EXPECT_EQ(*it, 33);
+}
+
+
 TEST(DoublyLinkedListTest, IteratorWriteOperations) {
 	DoublyLinkedList<int> l({ 11, 22 });
 

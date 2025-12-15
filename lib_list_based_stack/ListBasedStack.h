@@ -68,7 +68,7 @@ template<class T> ListBasedStack<T>::ListBasedStack(size_t size, const T& value)
 		throw std::logic_error("Stack.sizevalue_constructor: 'size' must be > 0");
 	}
 	for (size_t i = 0; i < _size; i++) {
-		_data.pushBack(value);
+		_data.pushFront(value);
 	}
 }
 
@@ -79,7 +79,7 @@ template<class T> ListBasedStack<T>::ListBasedStack(const TVector<T>& vector) :
 		throw std::logic_error("Stack.fromTVector_constructor: 'size' must be > 0");
 	}
 	for (size_t i = 0; i < _size; i++) {
-		_data.pushBack(vector[i]);
+		_data.pushFront(vector[i]);
 	}
 }
 
@@ -91,7 +91,7 @@ template<class T> ListBasedStack<T>::ListBasedStack(const std::initializer_list<
 	}
 	size_t i = 0;
 	for (const auto& elem : init) {
-		_data.pushBack(elem);
+		_data.pushFront(elem);
 	}
 }
 
@@ -133,28 +133,28 @@ template<class T> void ListBasedStack<T>::push(const T& val) {
 	if (isFull()) {
 		throw std::logic_error("ListBasedStack.push: Unable to push - stack is full");
 	}
-	_data.pushBack(val);
+	_data.pushFront(val);
 }
 
 template<class T> void ListBasedStack<T>::pop() {
 	if (isEmpty()) {
 		throw std::logic_error("ListBasedStack.pop: Unable to pop - stack is empty");
 	}
-	_data.popBack();
+	_data.popFront();
 }
 
 template<class T> T& ListBasedStack<T>::top() {
 	if (isEmpty()) {
 		throw std::logic_error("ListBasedStack.top: Unable to get top element - stack is empty");
 	}
-	return _data.back();
+	return _data.front();
 }
 
 template<class T> const T& ListBasedStack<T>::top() const {
 	if (isEmpty()) {
 		throw std::logic_error("ListBasedStack.top: Unable to get top element - stack is empty");
 	}
-	return _data.back();
+	return _data.front();
 }
 
 template<class T> void ListBasedStack<T>::clear() noexcept {
