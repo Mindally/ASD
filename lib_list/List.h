@@ -402,9 +402,7 @@ template<class T> void List<T>::erase(size_t pos) {
 	if (pos == 0) {
 		popFront();
 	}
-	else if (pos == _size - 1) {
-		popBack();
-	}
+
 	else {
 		singly_linked::Node<T>* current = _head;
 		size_t currentPos = 0;
@@ -431,9 +429,6 @@ template<class T> void List<T>::eraseNode(singly_linked::Node<T>* pos) {
 
 	if (pos == _head) {
 		popFront();
-	}
-	else if (pos == _tail) {
-		popBack();
 	}
 	else {
 		singly_linked::Node<T>* current = _head;

@@ -206,8 +206,12 @@ public:
 	// Getters associated with the Iterator class
 	inline Iterator begin() { return Iterator(_head); };
 	inline Iterator end() { return Iterator(nullptr); };
+	inline Iterator rbegin() { return Iterator(_tail); };
+	inline Iterator rend() { return Iterator(nullptr); };
 	inline ConstIterator begin() const { return ConstIterator(_head); };
 	inline ConstIterator end() const { return ConstIterator(nullptr); };
+	inline ConstIterator rbegin() const { return ConstIterator(_tail); };
+	inline ConstIterator rend() const { return ConstIterator(nullptr); };
 };
 
 // Constructors

@@ -322,7 +322,7 @@ template<class T> void TVector<T>::pop_back() {
         throw std::logic_error("TVector.pop_back: Impossible to delete - there are no elements in the vector");
     }
     size_t index = 0;
-    for (size_t i = _size - 1; i >= 0; i--) {
+    for (int i = _size - 1; i >= 0; i--) {
         if (_states[i] == TVectorElemState::Busy) {
             index = i;
             break;

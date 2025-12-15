@@ -1,11 +1,10 @@
 #include <gtest/gtest.h>
 
-#include "../lib_queue/queue.h"
+#include "../lib_list_based_queue/ListBasedQueue.h"
+#include "../lib_queue/Queue.h"
 
-// Тест на кольцевой буфер добавить
-
-TEST(QueueTest, DefaultConstructor) {
-	Queue<int> q;
+TEST(ListBasedQueueTest, DefaultConstructor) {
+	ListBasedQueue<int> q;
 	EXPECT_EQ(q.isEmpty(), true);
 	EXPECT_EQ(q.isFull(), false);
 	EXPECT_EQ(q.size(), 0);
@@ -14,12 +13,12 @@ TEST(QueueTest, DefaultConstructor) {
 	ASSERT_ANY_THROW(q.tail());
 }
 
-TEST(QueueTest, ZeroSizeConstructor) {
-	ASSERT_ANY_THROW(Queue<int> s(0));
+TEST(ListBasedQueueTest, ZeroSizeConstructor) {
+	ASSERT_ANY_THROW(ListBasedQueue<int> s(0));
 }
 
-TEST(QueueTest, SizeConstructor) {
-	Queue<int> q(10);
+TEST(ListBasedQueueTest, SizeConstructor) {
+	ListBasedQueue<int> q(10);
 	EXPECT_EQ(q.isEmpty(), true);
 	EXPECT_EQ(q.isFull(), false);
 	EXPECT_EQ(q.size(), 0);
@@ -28,8 +27,8 @@ TEST(QueueTest, SizeConstructor) {
 	ASSERT_ANY_THROW(q.tail());
 }
 
-TEST(QueueTest, SizeValueConstructor) {
-	Queue<int> q(10, 5);
+TEST(ListBasedQueueTest, SizeValueConstructor) {
+	ListBasedQueue<int> q(10, 5);
 	EXPECT_EQ(q.isEmpty(), false);
 	EXPECT_EQ(q.isFull(), true);
 	EXPECT_EQ(q.size(), 10);
@@ -38,9 +37,9 @@ TEST(QueueTest, SizeValueConstructor) {
 	EXPECT_EQ(q.tail(), 5);
 }
 
-TEST(QueueTest, TVectorConstructor) {
+TEST(ListBasedQueueTest, TVectorConstructor) {
 	TVector<int> vec({ 2, 7, 45, -7 });
-	Queue<int> q(vec);
+	ListBasedQueue<int> q(vec);
 	EXPECT_EQ(q.isEmpty(), false);
 	EXPECT_EQ(q.isFull(), true);
 	EXPECT_EQ(q.size(), 4);
@@ -49,8 +48,8 @@ TEST(QueueTest, TVectorConstructor) {
 	EXPECT_EQ(q.tail(), -7);
 }
 
-TEST(QueueTest, InitListConstructor) {
-	Queue<int> q({ 2, 7, 45, -3 });
+TEST(ListBasedQueueTest, InitListConstructor) {
+	ListBasedQueue<int> q({ 2, 7, 45, -3 });
 	EXPECT_EQ(q.isEmpty(), false);
 	EXPECT_EQ(q.isFull(), true);
 	EXPECT_EQ(q.size(), 4);
@@ -59,9 +58,9 @@ TEST(QueueTest, InitListConstructor) {
 	EXPECT_EQ(q.tail(), -3);
 }
 
-TEST(QueueTest, CopyConstructor) {
-	Queue<int> q1({ 9, 0, 0, 6 });
-	Queue<int> q2(q1);
+TEST(ListBasedQueueTest, CopyConstructor) {
+	ListBasedQueue<int> q1({ 9, 0, 0, 6 });
+	ListBasedQueue<int> q2(q1);
 	EXPECT_EQ(q2.isEmpty(), false);
 	EXPECT_EQ(q2.isFull(), true);
 	EXPECT_EQ(q2.size(), 4);
@@ -75,9 +74,9 @@ TEST(QueueTest, CopyConstructor) {
 	EXPECT_EQ(q2.capacity(), 4);
 }
 
-TEST(QueueTest, AssignQueue) {
-	Queue<int> q2({ 1, 2, 5, 4 });
-	Queue<int> q1;
+TEST(ListBasedQueueTest, AssignListBasedQueue) {
+	ListBasedQueue<int> q2({ 1, 2, 5, 4 });
+	ListBasedQueue<int> q1;
 	q1.assign(q2);
 	EXPECT_EQ(q1.isEmpty(), false);
 	EXPECT_EQ(q1.isFull(), true);
@@ -93,10 +92,10 @@ TEST(QueueTest, AssignQueue) {
 	EXPECT_EQ(q1.capacity(), 4);
 }
 
-TEST(QueueTest, AssignTVector) {
+TEST(ListBasedQueueTest, AssignTVector) {
 	TVector<int> data({5, 6, 3, 2, 1, 7});
-	Queue<int> q2({ 5, 6, 3, 2, 1, 7 });
-	Queue<int> q1;
+	ListBasedQueue<int> q2({ 5, 6, 3, 2, 1, 7 });
+	ListBasedQueue<int> q1;
 	q1.assign(data);
 	EXPECT_EQ(q1.isEmpty(), false);
 	EXPECT_EQ(q1.isFull(), true);
@@ -112,21 +111,29 @@ TEST(QueueTest, AssignTVector) {
 	EXPECT_EQ(q1.capacity(), 6);
 }
 
-TEST(QueueTest, ToTVector) {
+TEST(ListBasedQueueTest, ToTVector) {
 	TVector<int> data({ 1, 2, -3, 40 });
-	Queue<int> q({ 1, 2, -3, 40 });
+	ListBasedQueue<int> q({ 1, 2, -3, 40 });
 	TVector<int> vec;
 	vec = q.toTVector();
 	EXPECT_TRUE(vec == data);
 }
 
-TEST(QueueTest, PushFromFullExeption) {
-	Queue<int> q({ 9, 0, 0, 6 });
+TEST(ListBasedQueueTest, ToQueue) {
+	ListBasedQueue<int> q({ 1, 2, 3 });
+	Queue<int> result;
+	result = q.toQueue();
+	EXPECT_EQ(result.head(), 1);
+	EXPECT_EQ(result.tail(), 3);
+}
+
+TEST(ListBasedQueueTest, PushFromFullExeption) {
+	ListBasedQueue<int> q({ 9, 0, 0, 6 });
 	ASSERT_ANY_THROW(q.push(7));
 }
 
-TEST(QueueTest, PushFromEmpty) {
-	Queue<int> q({ 2, 4 });
+TEST(ListBasedQueueTest, PushFromEmpty) {
+	ListBasedQueue<int> q({ 2, 4 });
 	q.pop();
 	q.pop();
 	EXPECT_EQ(q.isEmpty(), true);
@@ -134,20 +141,20 @@ TEST(QueueTest, PushFromEmpty) {
 	EXPECT_EQ(q.isEmpty(), false);
 }
 
-TEST(QueueTest, Push) {
-	Queue<int> q(10);
+TEST(ListBasedQueueTest, Push) {
+	ListBasedQueue<int> q(10);
 	q.push(-12);
 	EXPECT_EQ(q.isEmpty(), false);
 	EXPECT_EQ(q.isFull(), false);
 }
 
-TEST(QueueTest, PopFromEmpty) {
-	Queue<int> q;
+TEST(ListBasedQueueTest, PopFromEmpty) {
+	ListBasedQueue<int> q;
 	ASSERT_ANY_THROW(q.pop());
 }
 
-TEST(QueueTest, Pop) {
-	Queue<int> q({ 4, 7, -13 });
+TEST(ListBasedQueueTest, Pop) {
+	ListBasedQueue<int> q({ 4, 7, -13 });
 	q.pop();
 	EXPECT_EQ(q.isEmpty(), false);
 	EXPECT_EQ(q.isFull(), false);
@@ -155,15 +162,15 @@ TEST(QueueTest, Pop) {
 	EXPECT_EQ(q.head(), 7);
 }
 
-TEST(QueueTest, Clear) {
-	Queue<int> q({ 176, -45, 8 });
+TEST(ListBasedQueueTest, Clear) {
+	ListBasedQueue<int> q({ 176, -45, 8 });
 	q.clear();
 	EXPECT_EQ(q.isEmpty(), true);
 	EXPECT_EQ(q.isFull(), false);
 }
 
-TEST(QueueTest, ReserveLessElements) {
-	Queue<int> q({ 4, 7, 8 });
+TEST(ListBasedQueueTest, ReserveLessElements) {
+	ListBasedQueue<int> q({ 4, 7, 8 });
 	EXPECT_EQ(q.isEmpty(), false);
 	EXPECT_EQ(q.isFull(), true);
 	EXPECT_EQ(q.tail(), 8);
@@ -181,8 +188,8 @@ TEST(QueueTest, ReserveLessElements) {
 	EXPECT_EQ(q.capacity(), 3);
 }
 
-TEST(QueueTest, ReserveMoreElements) {
-	Queue<int> q({ 1, 2, 3 });
+TEST(ListBasedQueueTest, ReserveMoreElements) {
+	ListBasedQueue<int> q({ 1, 2, 3 });
 	EXPECT_EQ(q.isEmpty(), false);
 	EXPECT_EQ(q.isFull(), true);
 	EXPECT_EQ(q.tail(), 3);
@@ -200,13 +207,13 @@ TEST(QueueTest, ReserveMoreElements) {
 	EXPECT_EQ(q.capacity(), 10);
 }
 
-TEST(QueueTest, ShrinkToFitToEmptyException) {
-	Queue<int> q;
+TEST(ListBasedQueueTest, ShrinkToFitToEmptyException) {
+	ListBasedQueue<int> q;
 	ASSERT_ANY_THROW(q.shrinkToFit());
 }
 
-TEST(QueueTest, ShrinkToFitFull) {
-	Queue<int> q({ 4, 7, 8 });
+TEST(ListBasedQueueTest, ShrinkToFitFull) {
+	ListBasedQueue<int> q({ 4, 7, 8 });
 	EXPECT_EQ(q.isEmpty(), false);
 	EXPECT_EQ(q.isFull(), true);
 	EXPECT_EQ(q.tail(), 8);
@@ -224,8 +231,8 @@ TEST(QueueTest, ShrinkToFitFull) {
 	EXPECT_EQ(q.capacity(), 3);
 }
 
-TEST(QueueTest, ShrinkToFit) {
-	Queue<int> q({ 4, 7, 8 });
+TEST(ListBasedQueueTest, ShrinkToFit) {
+	ListBasedQueue<int> q({ 4, 7, 8 });
 	EXPECT_EQ(q.isEmpty(), false);
 	EXPECT_EQ(q.isFull(), true);
 	EXPECT_EQ(q.tail(), 8);
@@ -245,13 +252,13 @@ TEST(QueueTest, ShrinkToFit) {
 	EXPECT_EQ(q.capacity(), 1);
 }
 
-TEST(QueueTest, IsEmpty) {
-	Queue<int> q;
+TEST(ListBasedQueueTest, IsEmpty) {
+	ListBasedQueue<int> q;
 	EXPECT_EQ(q.isEmpty(), true);
 }
 
-TEST(QueueTest, IsNotEmpty) {
-	Queue<int> q({ 13, 51 });
+TEST(ListBasedQueueTest, IsNotEmpty) {
+	ListBasedQueue<int> q({ 13, 51 });
 	EXPECT_EQ(q.isEmpty(), false);
 	q.pop();
 	EXPECT_EQ(q.isEmpty(), false);
@@ -259,8 +266,8 @@ TEST(QueueTest, IsNotEmpty) {
 	EXPECT_EQ(q.isEmpty(), true);
 }
 
-TEST(QueueTest, IsFull) {
-	Queue<int> q({ -94, 13 });
+TEST(ListBasedQueueTest, IsFull) {
+	ListBasedQueue<int> q({ -94, 13 });
 	EXPECT_EQ(q.isFull(), true);
 	q.pop();
 	EXPECT_EQ(q.isFull(), false);
@@ -268,8 +275,8 @@ TEST(QueueTest, IsFull) {
 	EXPECT_EQ(q.isFull(), false);
 }
 
-TEST(QueueTest, IsNotFull) {
-	Queue<int> q({ 6, 66, 777 });
+TEST(ListBasedQueueTest, IsNotFull) {
+	ListBasedQueue<int> q({ 6, 66, 777 });
 	EXPECT_EQ(q.isFull(), true);
 	q.pop();
 	EXPECT_EQ(q.isFull(), false);

@@ -377,7 +377,7 @@ TEST(ListTest, ConstIteratorEmptyList) {
 	EXPECT_EQ(l.begin(), l.end());
 
 	int count = 0;
-	for (auto it = l.begin(); it != l.end(); ++it) {
+	for (auto it = l.begin(); it != l.end(); it++) {
 		count++;
 	}
 	EXPECT_EQ(count, 0);
