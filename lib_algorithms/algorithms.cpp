@@ -1,5 +1,3 @@
-#include <cstdlib>
-#include <ctime>
 #include "../lib_algorithms/algorithms.h"
 
 int findLocalMin(int matrix[][MAX_N], int n) {
@@ -27,5 +25,49 @@ int findLocalMin(int matrix[][MAX_N], int n) {
         }
         i = next_iElem;
         j = next_jElem;
+    }
+}
+
+bool checkBrackets(std::string str) {
+    //int bracketCnt = 0;
+
+    //for (int i = 0; i < str.length(); i++) {
+    //    if (str[i] == '(' || str[i] == ')' ||
+    //        str[i] == '[' || str[i] == ']' ||
+    //        str[i] == '{' || str[i] == '}')
+    //    {
+    //        bracketCnt++;
+    //    }
+    //}
+    //if (bracketCnt % 2 != 0) {
+    //    return false;
+    //}
+    Stack<char> brackets(str.length() / 2);
+    for (int i = 0; i < str.length(); i++) {
+        if (str[i] == '(' || str[i] == '[' || str[i] == '{') {
+            brackets.push(str[i]);
+            continue;
+        }
+        if (str[i] == ')')
+        {
+            if (brackets.isEmpty()) return false;
+            if (brackets.top() == '(') brackets.pop();
+        }
+        if (str[i] == '}') {
+            if (brackets.isEmpty()) return false;
+            if (brackets.top() == '{') brackets.pop();
+        }
+        if (str[i] == ']') {
+            if (brackets.isEmpty()) return false;
+            if (brackets.top() == '[') brackets.pop();
+        }
+    }
+    if (brackets.isEmpty()) return true;
+    return false;
+}
+
+void readExpression(std::string str) {
+    if (!checkBrackets(str)) {
+        throw std::runtime_error("readExpression: Some brackets are missing");
     }
 }
