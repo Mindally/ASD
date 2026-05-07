@@ -1,3 +1,5 @@
+Страдание в чистом виде
+
 Шаблон для разработки и тестирования программ на С++ по предмету "Алгоритмы и структуры данных"
 
 * Integrated Development Environment: Microsoft Visual Studio 
