@@ -67,6 +67,8 @@ public:
 		Iterator() : _current(nullptr) {};
 		Iterator(singly_linked::Node<T>* node) : _current(node) {};
 
+		singly_linked::Node<T>* getNode() { return _current; }
+
 		Iterator& operator=(const Iterator& other) {
 			if (this != &other) {
 				_current = other._current;
@@ -116,6 +118,8 @@ public:
 	public:
 		ConstIterator() : _current(nullptr) {};
 		ConstIterator(const singly_linked::Node<T>* node) : _current(node) {};
+
+		const singly_linked::Node<T>* getNode() const { return _current; }
 
 		ConstIterator& operator=(const ConstIterator& other) {
 			if (this != &other) {
