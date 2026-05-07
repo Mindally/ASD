@@ -299,3 +299,148 @@ TEST(TVectorTest, Assign) {
     vec1 = vec2;
     EXPECT_EQ(vec1 == vec2, true);
 }
+
+TEST(TVectorTest, IteratorBeginEnd) {
+    TVector<int> vec({ 1, 2, 3, 4, 5 });
+    auto it = vec.begin();
+    EXPECT_EQ(*it, 1);
+
+    auto end_it = vec.end();
+    EXPECT_TRUE(it != end_it);
+}
+
+TEST(TVectorTest, IteratorTraversal) {
+    TVector<int> vec({ 1, 2, 3, 4, 5 });
+    auto it = vec.begin();
+
+    EXPECT_EQ(*it, 1);
+    ++it;
+    EXPECT_EQ(*it, 2);
+    it++;
+    EXPECT_EQ(*it, 3);
+    --it;
+    EXPECT_EQ(*it, 2);
+}
+
+TEST(TVectorTest, IteratorRangeBasedFor) {
+    TVector<int> vec({ 1, 2, 3, 4, 5 });
+    int sum = 0;
+
+    for (const auto& elem : vec) {
+        sum += elem;
+    }
+
+    EXPECT_EQ(sum, 15);
+}
+
+TEST(TVectorTest, IteratorWithDeletedElements) {
+    TVector<int> vec({ 1, 2, 3, 4, 5 });
+
+    vec.pop_front();
+    vec.erase(1);
+
+    std::vector<int> result;
+    for (auto it = vec.begin(); it != vec.end(); ++it) {
+        result.push_back(*it);
+    }
+
+    EXPECT_EQ(result.size(), 3);
+    EXPECT_EQ(result[0], 2);
+    EXPECT_EQ(result[1], 4);
+    EXPECT_EQ(result[2], 5);
+}
+
+TEST(TVectorTest, IteratorAssignment) {
+    TVector<int> vec({ 1, 2, 3, 4, 5 });
+
+    auto it1 = vec.begin();
+    auto it2 = it1;
+
+    EXPECT_EQ(*it1, 1);
+    EXPECT_EQ(*it2, 1);
+
+    ++it1;
+    EXPECT_EQ(*it1, 2);
+    EXPECT_EQ(*it2, 1);
+}
+
+TEST(TVectorTest, IteratorCompoundAssignment) {
+    TVector<int> vec({ 1, 2, 3, 4, 5 });
+
+    auto it = vec.begin();
+    it += 2;
+    EXPECT_EQ(*it, 3);
+
+    it -= 1;
+    EXPECT_EQ(*it, 2);
+}
+
+TEST(TVectorTest, IteratorEquality) {
+    TVector<int> vec({ 1, 2, 3, 4, 5 });
+
+    auto it1 = vec.begin();
+    auto it2 = vec.begin();
+
+    EXPECT_TRUE(it1 == it2);
+
+    ++it1;
+    EXPECT_TRUE(it1 != it2);
+}
+
+TEST(TVectorTest, IteratorWithEmptyVector) {
+    TVector<int> vec;
+    EXPECT_TRUE(vec.begin() == vec.end());
+}
+
+TEST(TVectorTest, IteratorPostIncrement) {
+    TVector<int> vec({ 1, 2, 3});
+
+    auto it = vec.begin();
+    auto old_it = it++;
+
+    EXPECT_EQ(*old_it, 1);
+    EXPECT_EQ(*it, 2);
+}
+
+TEST(TVectorTest, IteratorPostDecrement) {
+    TVector<int> vec({ 1, 2, 3});
+
+    auto it = vec.begin();
+    ++it;
+    ++it;
+
+    auto old_it = it--;
+
+    EXPECT_EQ(*old_it, 3);
+    EXPECT_EQ(*it, 2);
+}
+
+TEST(TVectorTest, IteratorAfterVectorModification) {
+    TVector<int> vec({ 1, 2, 3});
+
+    auto it = vec.begin();
+    EXPECT_EQ(*it, 1);
+
+    vec.push_front(0);
+
+    EXPECT_EQ(*vec.begin(), 0);
+}
+
+TEST(TVectorTest, IteratorDistance) {
+    TVector<int> vec({ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
+
+    auto it1 = vec.begin();
+    auto it2 = vec.begin();
+
+    for (int i = 0; i < 5; ++i) {
+        ++it2;
+    }
+
+    int distance = 0;
+    for (auto it = it1; it != it2; ++it) {
+        ++distance;
+    }
+
+    EXPECT_EQ(distance, 5);
+    EXPECT_EQ(*it2, 6);
+}

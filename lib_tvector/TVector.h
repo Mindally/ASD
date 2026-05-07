@@ -71,6 +71,121 @@ public:
     bool operator!=(const TVector<T>&) const;
     T& operator[](size_t) const;
 
+    class Iterator {
+        TVector<T>* _vector;
+        size_t _current_index;
+
+        void move_to_next_busy() {
+            while (_current_index < _vector->_size &&
+                _vector->_states[_current_index] != TVectorElemState::Busy) {
+                ++_current_index;
+            }
+        }
+
+        void move_to_prev_busy() {
+            while (_current_index > 0 &&
+                _current_index != static_cast<size_t>(-1) &&
+                _vector->_states[_current_index] != TVectorElemState::Busy) {
+                --_current_index;
+            }
+        }
+
+    public:
+        Iterator() : _vector(nullptr), _current_index(0) {}
+        Iterator(TVector<T>* vec, size_t index) : _vector(vec), _current_index(index) {
+            if (_vector && _current_index < _vector->_size &&
+                _vector->_states[_current_index] != TVectorElemState::Busy) {
+                move_to_next_busy();
+            }
+        }
+
+        Iterator& operator=(const Iterator& other) {
+            if (this != &other) {
+                _vector = other._vector;
+                _current_index = other._current_index;
+            }
+            return *this;
+        }
+
+        Iterator& operator++() {
+            ++_current_index;
+            move_to_next_busy();
+            return *this;
+        }
+
+        Iterator operator++(int) {
+            Iterator temp = *this;
+            ++(*this);
+            return temp;
+        }
+
+        Iterator& operator--() {
+            if (_current_index > 0) {
+                --_current_index;
+            }
+            move_to_prev_busy();
+            return *this;
+        }
+
+        Iterator operator--(int) {
+            Iterator temp = *this;
+            --(*this);
+            return temp;
+        }
+
+        Iterator& operator+=(size_t n) {
+            for (size_t i = 0; i < n && _current_index < _vector->_size; ++i) {
+                ++(*this);
+            }
+            return *this;
+        }
+
+        Iterator& operator-=(size_t n) {
+            for (size_t i = 0; i < n && _current_index > 0; ++i) {
+                --(*this);
+            }
+            return *this;
+        }
+
+        bool operator==(const Iterator& other) const {
+            return _vector == other._vector && _current_index == other._current_index;
+        }
+
+        bool operator!=(const Iterator& other) const {
+            return !(*this == other);
+        }
+
+        T& operator*() {
+            if (_current_index >= _vector->_size ||
+                _vector->_states[_current_index] != TVectorElemState::Busy) {
+                throw std::out_of_range("TVector.Iterator: dereferencing invalid iterator");
+            }
+            return _vector->_data[_current_index];
+        }
+
+        T* operator->() {
+            return &(operator*());
+        }
+    };
+
+    // Iterator getters
+    Iterator begin() {
+        return Iterator(this, 0);
+    }
+
+    Iterator end() {
+        return Iterator(this, _size);
+    }
+
+    Iterator rbegin() {
+        return Iterator(this, _size);
+    }
+
+    Iterator rend() {
+        return Iterator(this, 0);
+    }
+
+
 private:
     void cleanup();
     size_t translate_index(size_t) const;
