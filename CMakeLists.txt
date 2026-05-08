@@ -11,7 +11,7 @@ include(cmake/function.cmake)
 add_subdirectory(lib_tvector)
 add_subdirectory(lib_dsu)
 add_subdirectory(lib_algorithms)
-add_subdirectory(lib_ITable)
+add_subdirectory(interface_ITable)
 
 add_subdirectory(main)
 
