@@ -38,16 +38,6 @@ template<class TKey, class TValue> void UnsortedTableOnArray<TKey, TValue>::eras
     }
 }
 
-template<class TKey, class TValue> TValue* UnsortedTableOnArray<TKey, TValue>::find(const TKey& key) noexcept {
-    int pos = keyExistsPos(key);
-    if (pos != -1) {
-        return &_rows[pos].second;
-    }
-    else {
-        return nullptr;
-    }
-}
-
 template<class TKey, class TValue> bool UnsortedTableOnArray<TKey, TValue>::contains(const TKey& key) const noexcept {
     int pos = keyExistsPos(key);
     if (pos != -1) {
@@ -55,6 +45,16 @@ template<class TKey, class TValue> bool UnsortedTableOnArray<TKey, TValue>::cont
     }
     else {
         return false;
+    }
+}
+
+template<class TKey, class TValue> TValue* UnsortedTableOnArray<TKey, TValue>::find(const TKey& key) noexcept {
+    int pos = keyExistsPos(key);
+    if (pos != -1) {
+        return &_rows[pos].second;
+    }
+    else {
+        return nullptr;
     }
 }
 
