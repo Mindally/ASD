@@ -12,6 +12,7 @@ add_subdirectory(lib_tvector)
 add_subdirectory(lib_dsu)
 add_subdirectory(lib_algorithms)
 add_subdirectory(interface_ITable)
+add_subdirectory(table_unsorted_table_on_array)
 
 add_subdirectory(main)
 
