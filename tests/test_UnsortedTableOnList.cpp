@@ -35,8 +35,15 @@ TEST(UnsortedTableOnListTest, Erase) {
     EXPECT_EQ(table.find(2), nullptr);
     EXPECT_NE(table.find(1), nullptr);
     EXPECT_NE(table.find(3), nullptr);
+}
 
-    table.erase(666);
+TEST(UnsortedTableOnListTest, EraseNotExist) {
+    UnsortedTableOnList<int, std::string> table;
+    table.insert(1, "one");
+    table.insert(2, "two");
+    table.insert(3, "three");
+
+    EXPECT_ANY_THROW(table.erase(666));
 }
 
 TEST(UnsortedTableOnListTest, IsEmpty) {
