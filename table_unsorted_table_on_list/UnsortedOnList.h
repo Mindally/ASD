@@ -48,12 +48,14 @@ template<class TKey, class TValue> void UnsortedTableOnList<TKey, TValue>::inser
 }
 
 template<class TKey, class TValue> void UnsortedTableOnList<TKey, TValue>::erase(const TKey& key) {
-    auto it = findKeyIter(key);
-    if (it != _list.end()) {
-        size_t pos = 0;
-        for (auto searchIt = _list.begin(); searchIt != it; ++searchIt, ++pos) {
-        }
+    size_t pos = 0;
+    for (auto searchIt = _list.begin(); searchIt != _list.end() && (*searchIt).first != key; ++searchIt, ++pos) {
+    }
+    try {
         _list.erase(pos);
+    }
+    catch (std::exception e) {
+        throw std::logic_error("error");
     }
 }
 
