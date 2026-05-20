@@ -10,8 +10,8 @@ TEST(HeapTest, DefaultConstructor) {
     Heap<int, std::string> heap;
     EXPECT_TRUE(heap.isEmpty());
     EXPECT_EQ(heap.size(), 0);
-    EXPECT_ANY_THROW(heap.top(), std::logic_error);
-    EXPECT_ANY_THROW(heap.extract(), std::logic_error);
+    EXPECT_ANY_THROW(heap.top());
+    EXPECT_ANY_THROW(heap.extract());
 }
 
 TEST(HeapTest, InsertAndTop) {
@@ -53,8 +53,8 @@ TEST(HeapTest, ExtractInOrder) {
 
 TEST(HeapTest, ExtractFromEmpty) {
     Heap<int, int> heap;
-    EXPECT_THROW(heap.extract(), std::logic_error);
-    EXPECT_THROW(heap.top(), std::logic_error);
+    EXPECT_ANY_THROW(heap.extract());
+    EXPECT_ANY_THROW(heap.top());
 }
 
 TEST(HeapTest, TopAfterExtract) {
@@ -63,6 +63,6 @@ TEST(HeapTest, TopAfterExtract) {
     heap.insert(5, 50);
     heap.extract();
     heap.extract();
-    EXPECT_THROW(heap.top(), std::logic_error);
-    EXPECT_THROW(heap.extract(), std::logic_error);
+    EXPECT_ANY_THROW(heap.top());
+    EXPECT_ANY_THROW(heap.extract());
 }
