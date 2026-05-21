@@ -19,6 +19,7 @@ add_subdirectory(interface_ITable)
 add_subdirectory(table_unsorted_table_on_array)
 add_subdirectory(table_unsorted_table_on_list)
 add_subdirectory(table_sorted_table_on_array)
+add_subdirectory(table_double_hash_table)
 
 add_subdirectory(main)
 
