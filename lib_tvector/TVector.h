@@ -24,6 +24,7 @@ public:
     // Constructors
     TVector();
     explicit TVector(size_t);
+    explicit TVector(size_t, const T&);
     TVector(size_t, const T*);
     explicit TVector(std::initializer_list<T>);
     TVector(size_t, std::initializer_list<T>);
@@ -232,6 +233,31 @@ template<class T> TVector<T>::TVector(size_t size) :
         for (size_t i = _size; i < _capacity; i++) {
             _states[i] = TVectorElemState::Empty;
         }
+    }
+}
+
+template<class T> TVector<T>::TVector(size_t size, const T& value) :
+    _data(nullptr),
+    _states(nullptr),
+    _size(size),
+    _capacity(size + CAPACITY),
+    _deleted(0),
+    _is_clean(true)
+{
+    if (size < 0) {
+        throw std::invalid_argument("TVector.sizedata_constructor: Invalid argument 'size' - must be >= 0");
+    }
+    if (data == nullptr && size > 0) {
+        throw std::invalid_argument("TVector.size_constructor: Invalid argument 'data' - is nullptr");
+    }
+    _data = new T[_capacity];
+    _states = new TVectorElemState[_capacity];
+    for (size_t i = 0; i < _size; i++) {
+        _data[i] = value;
+        _states[i] = TVectorElemState::Busy;
+    }
+    for (size_t i = _size; i < _capacity; i++) {
+        _states[i] = TVectorElemState::Empty;
     }
 }
 
