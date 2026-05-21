@@ -54,8 +54,11 @@ public:
 };
 
 template <class TValue> void DoubleHashTable<TValue>::determineStepLength(const size_t& size, const size_t& stepDenom) {
-    if (stepDenom < 3) {
+    if (size < 3) {
         throw std::invalid_argument("DoubleHashTable.determineStepLength: Please make table at least 3 elements long!");
+    }
+    if (stepDenom == 0) {
+        throw std::invalid_argument("DoubleHashTable.determineStepLength: Step denominator must be positive!");
     }
     int upperLimit = static_cast<int>(size / stepDenom);
     for (size_t i = std::max(2, upperLimit); i < size; i++) {
@@ -173,5 +176,5 @@ template <class TValue> void DoubleHashTable<TValue>::print(std::ostream& out) c
             out << std::get<1>(_rows[i]) << " : " << std::get<2>(_rows[i]) << "\n";
         }
     }
-    std::cout << std::endl;
+    out << std::endl;
 }
