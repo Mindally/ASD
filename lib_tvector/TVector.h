@@ -1,4 +1,4 @@
-// "Copyright 2025 Artem Denisov 3824B1PR2"
+// "Copyright 2026 Artem Denisov 3824B1PR2"
 #pragma once
 
 #include <iostream>
