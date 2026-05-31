@@ -134,3 +134,23 @@ TEST(SortedTableOnArrayTest, EraseThenInsert) {
     EXPECT_TRUE(table.contains(1));
     EXPECT_TRUE(table.contains(3));
 }
+
+TEST(SortedTableOnArrayTest, InsertMaintainsSortedOrderWithGetter) {
+    SortedTableOnArray<int, std::string> table;
+    table.insert(5, "five");
+    table.insert(1, "one");
+    table.insert(9, "nine");
+    table.insert(3, "three");
+    table.insert(7, "seven");
+
+    const auto& rows = table.getRows();
+    ASSERT_EQ(rows.size(), 5);
+    for (size_t i = 1; i < rows.size(); ++i) {
+        EXPECT_LT(rows[i - 1].first, rows[i].first);
+    }
+    EXPECT_EQ(rows[0].first, 1);
+    EXPECT_EQ(rows[1].first, 3);
+    EXPECT_EQ(rows[2].first, 5);
+    EXPECT_EQ(rows[3].first, 7);
+    EXPECT_EQ(rows[4].first, 9);
+}

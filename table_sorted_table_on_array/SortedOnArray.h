@@ -15,6 +15,7 @@ public:
 
     TValue* find(const TKey&) noexcept override;
 
+    inline const TVector<std::pair<TKey, TValue>>& getRows() const { return _rows; }
     inline bool isEmpty() const noexcept override { return _rows.is_empty(); };
     bool contains(const TKey&) const noexcept override;
 
