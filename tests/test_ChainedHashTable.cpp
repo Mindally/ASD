@@ -148,3 +148,48 @@ TEST(ChainedHashTableTest, ContainsAndSize) {
     EXPECT_FALSE(table.contains("a"));
     EXPECT_EQ(0, table.size());
 }
+
+TEST(ChainedHashTableTest, ExplicitCollisionHandling) {
+    ChainedHashTable<int> table(5);
+
+    for (int i = 0; i < 10; ++i) {
+        table.insert("key" + std::to_string(i), i);
+    }
+
+    for (int i = 0; i < 10; ++i) {
+        EXPECT_TRUE(table.contains("key" + std::to_string(i)));
+        EXPECT_EQ(i, *table.find("key" + std::to_string(i)));
+    }
+    EXPECT_EQ(10, table.size());
+}
+
+TEST(ChainedHashTableTest, EraseFromMiddleOfChain) {
+    ChainedHashTable<int> table(3);
+
+    table.insert("collide1", 1);
+    table.insert("collide2", 2);
+    table.insert("collide3", 3);
+
+    table.erase("collide2");
+
+    EXPECT_FALSE(table.contains("collide2"));
+    EXPECT_TRUE(table.contains("collide1"));
+    EXPECT_TRUE(table.contains("collide3"));
+    EXPECT_EQ(2, table.size());
+
+    EXPECT_EQ(1, *table.find("collide1"));
+    EXPECT_EQ(3, *table.find("collide3"));
+}
+
+TEST(ChainedHashTableTest, InsertAfterEraseInSameBucket) {
+    ChainedHashTable<int> table(3);
+    table.insert("A", 1);
+    table.insert("B", 2);
+    table.erase("A");
+    table.insert("C", 3);
+
+    EXPECT_TRUE(table.contains("B"));
+    EXPECT_TRUE(table.contains("C"));
+    EXPECT_FALSE(table.contains("A"));
+    EXPECT_EQ(2, table.size());
+}
