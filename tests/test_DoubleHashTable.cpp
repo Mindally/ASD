@@ -217,9 +217,9 @@ TEST(DoubleHashTableTest, InsertUsesDeletedSlot) {
 TEST(DoubleHashTableTest, CollisionResolutionByDoubleHashing) {
     DoubleHashTable<int> table(7);
 
-    table.insert("a", 1);
-    table.insert("b", 2);
+    table.insert("ab", 1);
+    table.insert("ba", 1);
 
-    EXPECT_TRUE(table.contains("a"));
-    EXPECT_TRUE(table.contains("b"));
+    EXPECT_TRUE(table.contains("ab"));
+    EXPECT_TRUE(table.contains("ba"));
 }
