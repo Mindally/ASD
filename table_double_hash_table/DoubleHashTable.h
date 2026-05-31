@@ -105,19 +105,35 @@ template <class TValue> DoubleHashTable<TValue>::DoubleHashTable(const DoubleHas
 
 template <class TValue> void DoubleHashTable<TValue>::insert(const std::string& key, const TValue& value) {
     size_t hash = firstHashFunction(key);
-    
+    size_t firstFree = _size;
+    bool freeFound = false;
+
     for (size_t i = 0; i < _size; i++) {
-        if (std::get<0>(_rows[hash]) != EntryStatus::Busy) {
-            _rows[hash] = std::make_tuple(EntryStatus::Busy, key, value);
-            _counter++;
-            return;
+        EntryStatus status = std::get<0>(_rows[hash]);
+
+        if (status == EntryStatus::Busy) {
+            if (std::get<1>(_rows[hash]) == key) {
+                throw std::logic_error("DoubleHashTable.insert: key already exists!");
+            }
         }
-        if (std::get<0>(_rows[hash]) == EntryStatus::Busy && std::get<1>(_rows[hash]) == key) {
-            throw std::logic_error("DoubleHashTable.insert: key already exists!");
+        else {
+            if (!freeFound) {
+                firstFree = hash;
+                freeFound = true;
+            }
+            if (status == EntryStatus::Empty) {
+                break;
+            }
         }
         hash = secondHashFunction(hash);
     }
-    throw std::logic_error("DoubleHashTable.insert: table is full (no free slots)!");
+
+    if (!freeFound) {
+        throw std::logic_error("DoubleHashTable.insert: table is full (no free slots)!");
+    }
+
+    _rows[firstFree] = std::make_tuple(EntryStatus::Busy, key, value);
+    _counter++;
 }
 
 template <class TValue> void DoubleHashTable<TValue>::erase(const std::string& key) {

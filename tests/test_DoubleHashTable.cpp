@@ -187,3 +187,39 @@ TEST(DoubleHashTableTest, InsertAfterErase) {
     EXPECT_TRUE(table.contains("key4"));
     EXPECT_EQ(3, table.size());
 }
+
+TEST(DoubleHashTableTest, InsertDuplicateKeyAfterDeleted) {
+    DoubleHashTable<int> table(5);
+
+    table.insert("first", 1);
+    table.insert("second", 2);
+    table.erase("first");
+
+    EXPECT_ANY_THROW(table.insert("second", 3));
+    EXPECT_TRUE(table.contains("second"));
+    EXPECT_EQ(1, table.size());
+}
+
+TEST(DoubleHashTableTest, InsertUsesDeletedSlot) {
+    DoubleHashTable<int> table(5);
+
+    table.insert("key1", 10);
+    table.insert("key2", 20);
+    table.erase("key1");
+
+    table.insert("key3", 30);
+
+    EXPECT_TRUE(table.contains("key3"));
+    EXPECT_FALSE(table.contains("key1"));
+    EXPECT_EQ(2, table.size());
+}
+
+TEST(DoubleHashTableTest, CollisionResolutionByDoubleHashing) {
+    DoubleHashTable<int> table(7);
+
+    table.insert("a", 1);
+    table.insert("b", 2);
+
+    EXPECT_TRUE(table.contains("a"));
+    EXPECT_TRUE(table.contains("b"));
+}
